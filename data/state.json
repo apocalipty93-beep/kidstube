@@ -1,5 +1,5 @@
 {
-  "offset": 579252814,
+  "offset": 579252825,
   "lastDiscover": 1794905236,
   "qIndex": 4,
   "seedIds": {
@@ -63,7 +63,8 @@
     "UC3_ZmN_g5Z_M6F-MrAxzyxg": "approved",
     "UCSVSJ1OCSv5ClFgKFTHIDew": "approved",
     "UC5mNk1y0O1awxC8DucC8r0w": "approved",
-    "UCEC-8nMiuXYH2QUs0yYcHTQ": "blocked"
+    "UCEC-8nMiuXYH2QUs0yYcHTQ": "blocked",
+    "UCRlB2qa4GuP2dTXVrKJh83w": "auto_rejected"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -108,5 +109,7 @@
         "Titoo Ka Favorite Cake | Titoo Funny Cartoon Compilation | Hindi Cartoon for Kids #titoo"
       ]
     }
-  }
+  },
+  "searchDay": "2026-11-17",
+  "searchCount": 2
 }
