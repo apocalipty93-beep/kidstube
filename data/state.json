@@ -1,9 +1,150 @@
 {
   "offset": 0,
-  "lastDiscover": 0,
-  "qIndex": 0,
-  "seedIds": {},
-  "missingReported": [],
-  "seen": {},
-  "pending": {}
+  "lastDiscover": 1794905236,
+  "qIndex": 4,
+  "seedIds": {
+    "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
+    "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
+    "TVSmeshariki": "",
+    "luntik": "UCdgDIIKpFlpHB1L0LZnh5EQ",
+    "soyuzmultfilm": "UCHS2LM1n3f5cyL-ebgkqyLw",
+    "Bluey": "UCEC-8nMiuXYH2QUs0yYcHTQ",
+    "peppapig": "UCJ7_S0nGpKukDaTpTPKmTvQ",
+    "Pocoyo": "UCnB5W_ZJgiDFnklejRGADxw",
+    "SuperSimpleSongs": "UCLsooMJoIpl_7ux2jvdPB-Q",
+    "Alphablocks": "",
+    "msrachelforlittlelearners": "",
+    "sesamestreet": "UCoookXUzPciGrEZEXmh4Jjg",
+    "Numberblocks": "UCPlwvN0w4qFSP1FllALB92w",
+    "StoryBots": "",
+    "cocomelon": "UCbCmjCuTUZos6Inko4u57UQ",
+    "LittleBabyBum": "UCKAqou7V9FAWXpZd9xtOg3Q",
+    "pinkfong": "UCcdwLMPsaU2ezNSJU1nFoBQ",
+    "MotherGooseClub": "UCJkWoS4RsldA1coEIot5yDA"
+  },
+  "missingReported": [
+    "TVSmeshariki",
+    "Alphablocks",
+    "msrachelforlittlelearners",
+    "StoryBots"
+  ],
+  "seen": {
+    "UC7E2rR7jTG3_UWVLfbxUTxw": "auto_rejected",
+    "UCTo5wuXWR343g4TOXLX-_Dg": "auto_rejected",
+    "UCyhdMBRGG9iSJn-BHYjZlgQ": "auto_rejected",
+    "UC0db6LAwWdpZr-YYVte0Rvg": "auto_rejected",
+    "UCjatKSiDK_FrfwqG21sXjvQ": "auto_rejected",
+    "UCzLrBUihtiHxcGxsmlddIXA": "auto_rejected",
+    "UCRghxBLjM3PiCrNSmrhUemQ": "auto_rejected",
+    "UCYqksDldZTkKmsrBb4OGJ9g": "auto_rejected",
+    "UCEcG2mVAsYWoJDcEuDG4eJQ": "auto_rejected",
+    "UCPQd2hu3RpDDScGFQyy1Uhg": "auto_rejected",
+    "UCwodfLkRypcpLD02hc_y-1g": "auto_rejected",
+    "UCq86T3SRhbwIKJOHRtUL5sw": "auto_rejected",
+    "UCV1SycDpnU1A2dXqob6Aowg": "auto_rejected",
+    "UCkSuRQb0oa3R6jGcbBkhM2w": "auto_rejected",
+    "UCYLVdVNDjNP8tZO_2zDrGcg": "auto_rejected",
+    "UCxWkNmkeAL52VTJyBlIJRXw": "auto_rejected",
+    "UCtct4AiHtrEeDfw2wAJTQMw": "auto_rejected",
+    "UCQ07guyhDN6esFZ4Xby_iZg": "auto_rejected",
+    "UCo0ZBPbg3aVEO88tNwLwdDA": "auto_rejected",
+    "UCptSbzlqfdIDbr0l6QDa69Q": "auto_rejected",
+    "UCPtBBvnFJX6k7QiN-gwJHZg": "auto_rejected",
+    "UCuUS495hYAlL0SC9r0XkiQQ": "auto_rejected",
+    "UCpEnGHwpofNixmL9e9JacXw": "auto_rejected",
+    "UCILbBJTT1R2vTwznhno71CA": "auto_rejected",
+    "UCpYye8D5fFMUPf9nSfgd4bA": "auto_rejected",
+    "UCjK1opZvC3o4O6U-t5SCuew": "auto_rejected",
+    "UCbeecb9mTqz1cyZe3dgUcxQ": "auto_rejected",
+    "UCXIvAXVdbUDzIFhVwB9RR-g": "auto_rejected",
+    "UCKvouO7hIqRnvMgDYw_pftA": "auto_rejected",
+    "UCzQ1nEze_PX_zleFwvMoiTA": "auto_rejected",
+    "UCYa0Hs7JowFcY9MZpu7gz7w": "auto_rejected"
+  },
+  "pending": {
+    "UCG2CL6EUjG8TVT1Tpl9nJdg": {
+      "id": "UCG2CL6EUjG8TVT1Tpl9nJdg",
+      "title": "Ms Rachel - Toddler Learning Videos",
+      "lang": "en",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/C2nKGvtlPIpTO80svL80ZRRArA_512rEBMiZH6IWForDdVLd0SlVYQVObnmHxzVTeH9sOeNO=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 21900000,
+      "handle": "msrachel",
+      "samples": [
+        "Best Baby Songs with Ms Rachel - Nursery Rhymes for Babies - Open Shut Them + More",
+        "🔴 Learn with Ms Rachel - Toddler Learning - Kids Songs & Nursery Rhymes - Wheels On The Bus",
+        "Learn Colors with Ms Rachel - I Love A Rainbow Song - NEW ALBUM VERSION - Toddler Learning"
+      ]
+    },
+    "UC5mNk1y0O1awxC8DucC8r0w": {
+      "id": "UC5mNk1y0O1awxC8DucC8r0w",
+      "title": "Lalafun - Nursery Rhymes",
+      "lang": "en",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/pnppdH-kjYRBiavCFnajudfA-sPIy3vRxCuk8ZQRV6XUoJCPacqzo4g6201dV1xsfUDVIwGVqME=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 15200000,
+      "handle": "lalafun-kids-nursery-rhymes",
+      "samples": [
+        "Johny Johny Yes Papa (Animal Version) | Lalafun Nursery Rhymes & Kids Songs",
+        "Farm Hide and Seek! Baa Baa Black Sheep | Lalafun Nursery Rhymes & Kids Songs",
+        "Where Did the Animals’ Colors Go? | Lalafun Nursery Rhymes & Kids Songs"
+      ]
+    },
+    "UCSVSJ1OCSv5ClFgKFTHIDew": {
+      "id": "UCSVSJ1OCSv5ClFgKFTHIDew",
+      "title": "PAW Patrol Official & Friends",
+      "lang": "en",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/V6U27I79rlmTDSVm1rbXAiqwPZBVDsVijAJr386h-m28GYl3rvN4sqDooejLGhLkjTb7_UrNjA=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 11500000,
+      "handle": "pawpatrolofficial",
+      "samples": [
+        "Skye’s Wild Eagle Rescue! 🦅✈️ | To The Rescue: Compilation | PAW Patrol",
+        "Marshall Egg Ball Trend! #short",
+        "Rubble & Crew: The Crew Builds a Library Tunnel | Full Episode| PAW Patrol"
+      ]
+    },
+    "UCu7IDy0y-ZA0qaG51wrQY6w": {
+      "id": "UCu7IDy0y-ZA0qaG51wrQY6w",
+      "title": "Curious George Official",
+      "lang": "en",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_mme5GlHmFNnSrrGhurc8y-IRauHMAkCUQGbAF_k2CbzCs=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 6010000,
+      "handle": "curiousgeorge",
+      "samples": [
+        "Private Investigator George🕵️‍🧐l    🐵 Full Episodes | Curious George",
+        "Big Puddle Rescue Mission 🐵 Curious George 🐵 Kids Cartoon 🐵 Kids Movies",
+        "The Great City Skate Chase 🐵 Full Episodes | Curious George"
+      ]
+    },
+    "UCrGowbWyQrS5I6GOQ4LMYCQ": {
+      "id": "UCrGowbWyQrS5I6GOQ4LMYCQ",
+      "title": "Wow Kidz Gags",
+      "lang": "en",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_kV-FBwxl5rHc6cUcZOGZAqKgamiKocRzasJZs8sa__jb8=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 5920000,
+      "handle": "wowkidzgagstv",
+      "samples": [
+        "Circus King Guddu Ka Hungama | Guddu New Adventure Series | Animated Series",
+        "Motu Bana Invisible Man | Hindi Cartoon For Kids | Animated Series",
+        "Titoo Ka Favorite Cake | Titoo Funny Cartoon Compilation | Hindi Cartoon for Kids #titoo"
+      ]
+    },
+    "UC3_ZmN_g5Z_M6F-MrAxzyxg": {
+      "id": "UC3_ZmN_g5Z_M6F-MrAxzyxg",
+      "title": "Baby Tunes Kids Channel",
+      "lang": "ru",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_kwxiV5tr4V1d2nFFdcw6cfihC9L_qdZbi0zo2LgqlskaE=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 5400000,
+      "handle": "babytuneskidschannel",
+      "samples": [
+        "Зайчик 🐰🦊🐻 Привет, малыш! песенки и караоке для детей 👶",
+        "БОГАТЫРИ И СКАЗКИ — Большой сборник мультфильмов | Русские сказки, приключения и волшебство",
+        "МУЛЬТИКИ ДЛЯ МАЛЫШЕЙ | Лея и По – Добрые песенки и развивающие мультики"
+      ]
+    }
+  }
 }
