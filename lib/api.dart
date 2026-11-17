@@ -75,6 +75,72 @@ class Yt {
     return h * 3600 + mi * 60 + s;
   }
 
+  /// Видео, которые владелец разрешил встраивать, через поиск по каналу (100 ед. квоты).
+  static Future<List<Video>> fetchEmbeddable(Channel c, List<String> words) async {
+    final sj = await _get('search', {
+      'part': 'snippet',
+      'channelId': c.id,
+      'type': 'video',
+      'videoEmbeddable': 'true',
+      'safeSearch': 'strict',
+      'maxResults': '50',
+      'order': 'viewCount',
+    });
+    final ids = <String>[];
+    final titles = <String, String>{};
+    final dates = <String, DateTime>{};
+    for (final raw in (sj['items'] as List?) ?? []) {
+      final it = raw as Map<String, dynamic>;
+      final id = (it['id'] as Map<String, dynamic>?)?['videoId'] as String?;
+      final sn = (it['snippet'] as Map<String, dynamic>?) ?? {};
+      final title = (sn['title'] as String?) ?? '';
+      if (id == null || isBlockedText(title, words)) continue;
+      ids.add(id);
+      titles[id] = title;
+      dates[id] = DateTime.tryParse((sn['publishedAt'] as String?) ?? '') ??
+          DateTime(2000);
+    }
+    if (ids.isEmpty) return [];
+    final vj = await _get('videos', {
+      'part': 'contentDetails,status',
+      'id': ids.join(','),
+      'maxResults': '50',
+    });
+    final out = <Video>[];
+    for (final raw in (vj['items'] as List?) ?? []) {
+      final it = raw as Map<String, dynamic>;
+      final id = it['id'] as String;
+      final st = (it['status'] as Map<String, dynamic>?) ?? {};
+      final cd = (it['contentDetails'] as Map<String, dynamic>?) ?? {};
+      if (st['embeddable'] != true || st['privacyStatus'] != 'public') continue;
+      final secs = _parseDuration((cd['duration'] as String?) ?? '');
+      if (secs < 30) continue;
+      out.add(Video(
+        id: id,
+        title: titles[id] ?? '',
+        channelId: c.id,
+        channelTitle: c.title,
+        lang: c.lang,
+        seconds: secs,
+        published: dates[id] ?? DateTime(2000),
+      ));
+    }
+    return out;
+  }
+
+  /// Загрузки канала; если проигрываемых мало — добавляем разрешённые через поиск.
+  static Future<List<Video>> fetchChannel(Channel c, List<String> words) async {
+    final list = await fetchVideos(c, words);
+    if (list.length >= 10) return list;
+    try {
+      final extra = await fetchEmbeddable(c, words);
+      final have = list.map((v) => v.id).toSet();
+      return [...list, ...extra.where((v) => !have.contains(v.id))];
+    } catch (_) {
+      return list;
+    }
+  }
+
   /// Последние видео канала: 1 + 1 единица квоты.
   static Future<List<Video>> fetchVideos(Channel c, List<String> words,
       {int max = 30}) async {

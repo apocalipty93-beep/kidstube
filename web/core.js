@@ -198,6 +198,44 @@ var KT = (function () {
     });
   }
 
+  // Если среди последних загрузок почти нет проигрываемых видео (владелец запретил встраивание
+  // новинок), берём разрешённые для встраивания через поиск по каналу (100 ед. квоты).
+  function fetchEmbeddable(ch, ws) {
+    return get('search', { part: 'snippet', channelId: ch.id, type: 'video', videoEmbeddable: 'true', safeSearch: 'strict', maxResults: '50', order: 'viewCount' }).then(function (sj) {
+      var ids = [], titles = {}, dates = {};
+      (sj.items || []).forEach(function (it) {
+        var id = it.id && it.id.videoId, sn = it.snippet || {}, title = sn.title || '';
+        if (!id || isBlockedText(title, ws)) { return; }
+        ids.push(id); titles[id] = title;
+        var d = Date.parse(sn.publishedAt || '');
+        dates[id] = isNaN(d) ? 0 : d;
+      });
+      if (!ids.length) { return []; }
+      return get('videos', { part: 'contentDetails,status', id: ids.join(','), maxResults: '50' }).then(function (vj) {
+        var out = [];
+        (vj.items || []).forEach(function (it) {
+          var s = it.status || {}, cd = it.contentDetails || {};
+          if (s.embeddable !== true || s.privacyStatus !== 'public') { return; }
+          var secs = parseDuration(cd.duration);
+          if (secs < 30) { return; }
+          out.push({ id: it.id, title: titles[it.id] || '', channelId: ch.id, channelTitle: ch.title, lang: ch.lang, seconds: secs, published: dates[it.id] || 0 });
+        });
+        return out;
+      });
+    });
+  }
+
+  function fetchChannel(ch, ws) {
+    return fetchVideos(ch, ws).then(function (list) {
+      if (list.length >= 10) { return list; }
+      return fetchEmbeddable(ch, ws).then(function (extra) {
+        var have = {};
+        list.forEach(function (v) { have[v.id] = true; });
+        return list.concat(extra.filter(function (v) { return !have[v.id]; }));
+      })['catch'](function () { return list; });
+    });
+  }
+
   function refresh() {
     if (st.loading) { return Promise.resolve(); }
     if (!CFG.apiKey || CFG.apiKey === '__YT_KEY__') {
@@ -224,7 +262,7 @@ var KT = (function () {
     }).then(function () {
       var ws = words();
       var jobs = S.channels.filter(function (c) { return c.id && c.enabled; }).map(function (c) {
-        return fetchVideos(c, ws)['catch'](function (e) { note(e); return []; });
+        return fetchChannel(c, ws)['catch'](function (e) { note(e); return []; });
       });
       return Promise.all(jobs);
     }).then(function (lists) {

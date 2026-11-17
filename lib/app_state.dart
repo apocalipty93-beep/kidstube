@@ -291,7 +291,7 @@ class AppState extends ChangeNotifier {
       final results = await Future.wait(
           channels.where((c) => c.resolved && c.enabled).map((c) async {
         try {
-          return await Yt.fetchVideos(c, w);
+          return await Yt.fetchChannel(c, w);
         } catch (e) {
           firstErr ??= e.toString();
           return <Video>[];
