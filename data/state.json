@@ -1,5 +1,5 @@
 {
-  "offset": 579252811,
+  "offset": 579252814,
   "lastDiscover": 1794905236,
   "qIndex": 4,
   "seedIds": {
@@ -62,7 +62,8 @@
     "UCYa0Hs7JowFcY9MZpu7gz7w": "auto_rejected",
     "UC3_ZmN_g5Z_M6F-MrAxzyxg": "approved",
     "UCSVSJ1OCSv5ClFgKFTHIDew": "approved",
-    "UC5mNk1y0O1awxC8DucC8r0w": "approved"
+    "UC5mNk1y0O1awxC8DucC8r0w": "approved",
+    "UCEC-8nMiuXYH2QUs0yYcHTQ": "blocked"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
