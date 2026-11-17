@@ -1,5 +1,5 @@
 {
-  "offset": 0,
+  "offset": 579252806,
   "lastDiscover": 1794905236,
   "qIndex": 4,
   "seedIds": {
@@ -59,7 +59,8 @@
     "UCXIvAXVdbUDzIFhVwB9RR-g": "auto_rejected",
     "UCKvouO7hIqRnvMgDYw_pftA": "auto_rejected",
     "UCzQ1nEze_PX_zleFwvMoiTA": "auto_rejected",
-    "UCYa0Hs7JowFcY9MZpu7gz7w": "auto_rejected"
+    "UCYa0Hs7JowFcY9MZpu7gz7w": "auto_rejected",
+    "UC3_ZmN_g5Z_M6F-MrAxzyxg": "approved"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -130,20 +131,6 @@
         "Circus King Guddu Ka Hungama | Guddu New Adventure Series | Animated Series",
         "Motu Bana Invisible Man | Hindi Cartoon For Kids | Animated Series",
         "Titoo Ka Favorite Cake | Titoo Funny Cartoon Compilation | Hindi Cartoon for Kids #titoo"
-      ]
-    },
-    "UC3_ZmN_g5Z_M6F-MrAxzyxg": {
-      "id": "UC3_ZmN_g5Z_M6F-MrAxzyxg",
-      "title": "Baby Tunes Kids Channel",
-      "lang": "ru",
-      "cat": "cartoons",
-      "thumb": "https://yt3.ggpht.com/ytc/AIdro_kwxiV5tr4V1d2nFFdcw6cfihC9L_qdZbi0zo2LgqlskaE=s240-c-k-c0x00ffffff-no-rj",
-      "subs": 5400000,
-      "handle": "babytuneskidschannel",
-      "samples": [
-        "Зайчик 🐰🦊🐻 Привет, малыш! песенки и караоке для детей 👶",
-        "БОГАТЫРИ И СКАЗКИ — Большой сборник мультфильмов | Русские сказки, приключения и волшебство",
-        "МУЛЬТИКИ ДЛЯ МАЛЫШЕЙ | Лея и По – Добрые песенки и развивающие мультики"
       ]
     }
   }
