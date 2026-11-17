@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17T08:48:55Z",
+  "updated": "2026-11-17T08:48:59Z",
   "channels": [
     {
       "id": "UC3_ZmN_g5Z_M6F-MrAxzyxg",
@@ -17,6 +17,15 @@
       "lang": "en",
       "cat": "cartoons",
       "thumb": "https://yt3.ggpht.com/V6U27I79rlmTDSVm1rbXAiqwPZBVDsVijAJr386h-m28GYl3rvN4sqDooejLGhLkjTb7_UrNjA=s240-c-k-c0x00ffffff-no-rj",
+      "status": "approved"
+    },
+    {
+      "id": "UC5mNk1y0O1awxC8DucC8r0w",
+      "title": "Lalafun - Nursery Rhymes",
+      "handle": "lalafun-kids-nursery-rhymes",
+      "lang": "en",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/pnppdH-kjYRBiavCFnajudfA-sPIy3vRxCuk8ZQRV6XUoJCPacqzo4g6201dV1xsfUDVIwGVqME=s240-c-k-c0x00ffffff-no-rj",
       "status": "approved"
     }
   ]
