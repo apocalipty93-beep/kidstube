@@ -1,0 +1,35 @@
+name: Telegram-бот (предложения каналов)
+
+# Каждые 5 минут слушает нажатия кнопок в Telegram (до ~4 минут за запуск),
+# раз в сутки ищет новые детские каналы и присылает их карточками.
+# Результат пишет в data/catalog.json — приложение на ТВ/телефоне подхватывает его само.
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram-bot
+  cancel-in-progress: false
+
+jobs:
+  bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - name: Настроить git
+        run: |
+          git config user.name "kidstube-bot"
+          git config user.email "kidstube-bot@users.noreply.github.com"
+      - name: Запустить бота
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          YT_KEY: ${{ secrets.YT_BOT_KEY || secrets.YT_API_KEY }}
+          LISTEN_SECONDS: '240'
+        run: python3 scripts/bot.py

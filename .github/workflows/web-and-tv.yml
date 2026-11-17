@@ -1,0 +1,67 @@
+name: Web + LG TV
+
+# 1) Публикует сайт на GitHub Pages (нужен ПУБЛИЧНЫЙ репозиторий, в нём нет секретов)
+# 2) Собирает пакет для LG webOS (.ipk), который открывает этот сайт
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - 'data/**'
+      - 'scripts/**'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Подставить ключ YouTube API
+        env:
+          YT_WEB_KEY: ${{ secrets.YT_WEB_KEY }}
+        run: |
+          test -n "$YT_WEB_KEY" || { echo "Не задан секрет YT_WEB_KEY"; exit 1; }
+          sed -i "s|__YT_KEY__|$YT_WEB_KEY|g" web/config.js
+          sed -i "s|__REPO__|$GITHUB_REPOSITORY|g; s|__BRANCH__|$GITHUB_REF_NAME|g" web/config.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+  webos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Подставить адрес сайта
+        run: |
+          OWNER="${GITHUB_REPOSITORY_OWNER,,}"
+          REPO="${GITHUB_REPOSITORY#*/}"
+          URL="https://${OWNER}.github.io/${REPO}/"
+          echo "Сайт: $URL"
+          sed -i "s|__SITE_URL__|$URL|g" webos/index.html
+      - name: Собрать .ipk
+        run: |
+          npm install -g @webos-tooling/cli
+          ares-package webos --outdir out
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kidstube-webos-ipk
+          path: out/*.ipk

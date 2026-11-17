@@ -1,0 +1,14 @@
+{
+  "id": "uz.kidstube.tv",
+  "version": "1.0.0",
+  "vendor": "kidstube",
+  "type": "web",
+  "main": "index.html",
+  "title": "Мультики",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "bgColor": "#FFF8F0",
+  "iconColor": "#FF7043",
+  "resolution": "1920x1080",
+  "disallowScrollingInMainWindow": false
+}
