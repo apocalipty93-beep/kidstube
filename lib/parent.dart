@@ -146,6 +146,7 @@ class ParentScreen extends StatelessWidget {
                   title: Text(c.title),
                   subtitle: Text(c.resolved
                       ? '@${c.handle} • ${c.lang == 'ru' ? 'русский' : 'English'} • ${kCats[c.cat] ?? 'Мультики'}'
+                          '${app.videos.isEmpty ? '' : app.videos.any((v) => v.channelId == c.id) ? ' • ${app.videos.where((v) => v.channelId == c.id).length} видео' : ' • нет видео: канал запретил встраивание'}'
                       : '@${c.handle} — не найден на YouTube'),
                   value: c.enabled && c.resolved,
                   onChanged: c.resolved

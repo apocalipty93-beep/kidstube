@@ -27,6 +27,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   void initState() {
     super.initState();
     _cur = widget.video;
+    app.markWatched(_cur.id);
     _c = YoutubePlayerController.fromVideoId(
       videoId: _cur.id,
       autoPlay: true,
@@ -54,6 +55,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   }
 
   void _play(Video v) {
+    app.markWatched(v.id);
     setState(() => _cur = v);
     _c.loadVideoById(videoId: v.id);
   }

@@ -5,7 +5,7 @@ var KT = (function () {
   var STORE = 'kt_state_v1';
   var DAY6 = 6 * 3600 * 1000;
 
-  var S = { channels: [], videos: [], blocked: [], extra: [], pin: '', autoNext: true, last: 0, seedsSeen: [], catStop: [], catBlocked: [] };
+  var S = { channels: [], videos: [], blocked: [], extra: [], pin: '', autoNext: true, last: 0, seedsSeen: [], catStop: [], catBlocked: [], watched: [] };
   var st = { loading: false, error: null };
   var listeners = [];
 
@@ -150,12 +150,20 @@ var KT = (function () {
     });
   }
 
+  // До 3 страниц загрузок канала (до 150 видео), чтобы лента была разнообразной.
+  function fetchUploads(ch, token, acc, page) {
+    var q = { part: 'snippet,contentDetails', playlistId: ch.uploads || ('UU' + ch.id.substring(2)), maxResults: '50' };
+    if (token) { q.pageToken = token; }
+    return get('playlistItems', q).then(function (pl) {
+      acc = acc.concat(pl.items || []);
+      if (pl.nextPageToken && page < 3) { return fetchUploads(ch, pl.nextPageToken, acc, page + 1); }
+      return acc;
+    });
+  }
+
   function fetchVideos(ch, ws) {
-    return get('playlistItems', {
-      part: 'snippet,contentDetails',
-      playlistId: ch.uploads || ('UU' + ch.id.substring(2)),
-      maxResults: '30'
-    }).then(function (pl) {
+    return fetchUploads(ch, '', [], 1).then(function (items) {
+      var pl = { items: items };
       var ids = [], titles = {}, dates = {};
       (pl.items || []).forEach(function (it) {
         var cd = it.contentDetails || {}, sn = it.snippet || {};
@@ -170,14 +178,20 @@ var KT = (function () {
         dates[id] = isNaN(d) ? 0 : d;
       });
       if (!ids.length) { return []; }
-      return get('videos', { part: 'contentDetails,status', id: ids.join(','), maxResults: '50' }).then(function (vj) {
+      var chunks = [];
+      for (var c0 = 0; c0 < ids.length; c0 += 50) { chunks.push(ids.slice(c0, c0 + 50)); }
+      return Promise.all(chunks.map(function (part) {
+        return get('videos', { part: 'contentDetails,status', id: part.join(','), maxResults: '50' });
+      })).then(function (res) {
         var out = [];
-        (vj.items || []).forEach(function (it) {
-          var s = it.status || {}, cd = it.contentDetails || {};
-          if (s.embeddable !== true || s.privacyStatus !== 'public') { return; }
-          var secs = parseDuration(cd.duration);
-          if (secs < 30) { return; }
-          out.push({ id: it.id, title: titles[it.id] || '', channelId: ch.id, channelTitle: ch.title, lang: ch.lang, seconds: secs, published: dates[it.id] || 0 });
+        res.forEach(function (vj) {
+          (vj.items || []).forEach(function (it) {
+            var s = it.status || {}, cd = it.contentDetails || {};
+            if (s.embeddable !== true || s.privacyStatus !== 'public') { return; }
+            var secs = parseDuration(cd.duration);
+            if (secs < 30) { return; }
+            out.push({ id: it.id, title: titles[it.id] || '', channelId: ch.id, channelTitle: ch.title, lang: ch.lang, seconds: secs, published: dates[it.id] || 0 });
+          });
         });
         return out;
       });
@@ -233,13 +247,55 @@ var KT = (function () {
     });
   }
 
+  // Порядок ленты: новый при каждом запуске (стабилен, пока приложение открыто),
+  // непросмотренные идут раньше просмотренных, каналы чередуются.
+  var SEED = String(Math.random());
+  function hash(s) {
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 16777619) >>> 0; }
+    return h;
+  }
+  function markWatched(id) {
+    var w = S.watched || (S.watched = []);
+    var i = w.indexOf(id);
+    if (i !== -1) { w.splice(i, 1); }
+    w.push(id);
+    if (w.length > 600) { w.splice(0, w.length - 600); }
+    save();
+  }
+  function mix(list) {
+    var seen = {}, by = {}, order = [];
+    (S.watched || []).forEach(function (id) { seen[id] = true; });
+    list.forEach(function (v) {
+      if (!by[v.channelId]) { by[v.channelId] = []; order.push(v.channelId); }
+      by[v.channelId].push(v);
+    });
+    order.sort(function (a, b) { return hash(a + SEED) - hash(b + SEED); });
+    order.forEach(function (cid) {
+      by[cid].sort(function (a, b) {
+        var wa = seen[a.id] ? 1 : 0, wb = seen[b.id] ? 1 : 0;
+        if (wa !== wb) { return wa - wb; }
+        return hash(a.id + SEED) - hash(b.id + SEED);
+      });
+    });
+    var out = [], i = 0, added = true;
+    while (added) {
+      added = false;
+      for (var k = 0; k < order.length; k++) {
+        if (i < by[order[k]].length) { out.push(by[order[k]][i]); added = true; }
+      }
+      i++;
+    }
+    return out;
+  }
+
   function visible() {
     var on = {};
     S.channels.forEach(function (c) { if (c.enabled && c.id) { on[c.id] = true; } });
     var ws = words();
-    return S.videos.filter(function (v) {
+    return mix(S.videos.filter(function (v) {
       return on[v.channelId] && S.blocked.indexOf(v.id) === -1 && (S.catBlocked || []).indexOf(v.id) === -1 && !isBlockedText(v.title, ws);
-    });
+    }));
   }
 
   function init() {
@@ -274,7 +330,7 @@ var KT = (function () {
   function setAutoNext(v) { S.autoNext = !!v; save(); emit(); }
 
   return {
-    S: S, st: st, cfg: CFG, init: init, syncCatalog: syncCatalog, refresh: refresh, visible: visible, onChange: onChange, words: words,
+    S: S, st: st, cfg: CFG, markWatched: markWatched, init: init, syncCatalog: syncCatalog, refresh: refresh, visible: visible, onChange: onChange, words: words,
     setEnabled: setEnabled, removeChannel: removeChannel, addChannelByHandle: addChannelByHandle,
     blockVideo: blockVideo, clearBlocked: clearBlocked, setExtra: setExtra, setPin: setPin, setAutoNext: setAutoNext,
     isBlockedText: isBlockedText, parseDuration: parseDuration, fmtDur: fmtDur, _net: net

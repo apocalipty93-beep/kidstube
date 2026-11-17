@@ -81,7 +81,7 @@
     var all = KT.visible();
     if (filter.indexOf('ch:') === 0) {
       var fid = filter.slice(3);
-      if (!S.channels.some(function (c) { return c.id === fid && c.enabled; })) { filter = 'all'; }
+      if (!S.channels.some(function (c) { return c.id === fid && c.enabled; }) || !all.some(function (v) { return v.channelId === fid; })) { filter = 'all'; }
     }
     if (filter.indexOf('cat:') === 0) {
       var fcat = filter.slice(4);
@@ -111,7 +111,9 @@
     root.appendChild(chips);
 
     var av = h('div', { class: 'avatars' });
-    S.channels.filter(function (c) { return c.enabled && c.id; }).forEach(function (c) {
+    var hasVid = {};
+    all.forEach(function (v) { hasVid[v.channelId] = true; });
+    S.channels.filter(function (c) { return c.enabled && c.id && hasVid[c.id]; }).forEach(function (c) {
       var sel = filter === 'ch:' + c.id;
       var pic = h('div', { class: 'pic', text: c.thumb ? '' : c.title.charAt(0) });
       if (c.thumb) { pic.style.backgroundImage = 'url(' + c.thumb + ')'; }
@@ -172,6 +174,7 @@
   }
 
   function playVideo(v) {
+    KT.markWatched(v.id);
     cur = v;
     if (player && player.loadVideoById) { player.loadVideoById(v.id); }
     renderPlayerInfo();
@@ -233,6 +236,7 @@
 
   function openPlayer(v, list) {
     view = 'player';
+    KT.markWatched(v.id);
     cur = v; errCount = 0;
     pool = list;
     queue = list.filter(function (x) { return x.channelId === v.channelId; });
@@ -334,7 +338,7 @@
 
     p.appendChild(h('h2', { text: 'Разрешённые каналы' }));
     S.channels.forEach(function (c, i) {
-      var row = h('div', { class: 'row' }, [h('div', { class: 'nm' }, [c.title, h('div', { class: 'sub', text: '@' + c.handle + ' · ' + (c.lang === 'ru' ? 'русский' : 'English') + ' · ' + catName(c.cat) + (c.id ? '' : ' · не найден на YouTube') })])]);
+      var row = h('div', { class: 'row' }, [h('div', { class: 'nm' }, [c.title, h('div', { class: 'sub', text: '@' + c.handle + ' · ' + (c.lang === 'ru' ? 'русский' : 'English') + ' · ' + catName(c.cat) + (c.id ? (S.videos.length && !S.videos.some(function (v) { return v.channelId === c.id; }) ? ' · нет видео: канал запретил встраивание' : ' · ' + S.videos.filter(function (v) { return v.channelId === c.id; }).length + ' видео') : ' · не найден на YouTube') })])]);
       if (c.id) { row.appendChild(btn(c.enabled ? 'Включён' : 'Выключен', 'tg-' + i, function () { KT.setEnabled(c, !c.enabled); renderParent('tg-' + i); }, c.enabled ? 'main' : 'off')); }
       if (c.custom || !c.id) { row.appendChild(btn('Удалить', 'rm-' + i, function () { KT.removeChannel(c); renderParent('done'); })); }
       p.appendChild(row);

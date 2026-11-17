@@ -78,11 +78,21 @@ class Yt {
   /// Последние видео канала: 1 + 1 единица квоты.
   static Future<List<Video>> fetchVideos(Channel c, List<String> words,
       {int max = 30}) async {
-    final pl = await _get('playlistItems', {
-      'part': 'snippet,contentDetails',
-      'playlistId': c.uploads.isEmpty ? 'UU${c.id.substring(2)}' : c.uploads,
-      'maxResults': '$max',
-    });
+    // До 3 страниц загрузок канала (до 150 видео), чтобы лента была разнообразной.
+    final upItems = <dynamic>[];
+    String? token;
+    for (var page = 0; page < 3; page++) {
+      final r = await _get('playlistItems', {
+        'part': 'snippet,contentDetails',
+        'playlistId': c.uploads.isEmpty ? 'UU${c.id.substring(2)}' : c.uploads,
+        'maxResults': '50',
+        if (token != null) 'pageToken': token,
+      });
+      upItems.addAll((r['items'] as List?) ?? []);
+      token = r['nextPageToken'] as String?;
+      if (token == null) break;
+    }
+    final pl = <String, dynamic>{'items': upItems};
     final ids = <String>[];
     final titles = <String, String>{};
     final dates = <String, DateTime>{};
@@ -103,13 +113,18 @@ class Yt {
     }
     if (ids.isEmpty) return [];
 
-    final vj = await _get('videos', {
-      'part': 'contentDetails,status',
-      'id': ids.join(','),
-      'maxResults': '50',
-    });
+    final vItems = <dynamic>[];
+    for (var i = 0; i < ids.length; i += 50) {
+      final end = i + 50 > ids.length ? ids.length : i + 50;
+      final vj = await _get('videos', {
+        'part': 'contentDetails,status',
+        'id': ids.sublist(i, end).join(','),
+        'maxResults': '50',
+      });
+      vItems.addAll((vj['items'] as List?) ?? []);
+    }
     final out = <Video>[];
-    for (final raw in (vj['items'] as List?) ?? []) {
+    for (final raw in vItems) {
       final it = raw as Map<String, dynamic>;
       final id = it['id'] as String;
       final st = (it['status'] as Map<String, dynamic>?) ?? {};

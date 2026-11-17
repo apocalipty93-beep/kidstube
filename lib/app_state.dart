@@ -14,6 +14,8 @@ class AppState extends ChangeNotifier {
   Set<String> seedsSeen = {};
   List<String> catStop = []; // стоп-слова из Telegram-бота
   Set<String> catBlocked = {}; // видео, заблокированные через бота
+  List<String> watched = []; // недавно просмотренные (уходят в конец ленты)
+  final String _seed = DateTime.now().microsecondsSinceEpoch.toString();
   List<String> extraWords = [];
   String pin = '';
   bool autoNext = true;
@@ -23,16 +25,66 @@ class AppState extends ChangeNotifier {
 
   List<String> get words => [...kStopWords, ...extraWords, ...catStop];
 
+  int _hash(String s) {
+    var h = 2166136261;
+    for (final u in s.codeUnits) {
+      h ^= u;
+      h = (h * 16777619) & 0xFFFFFFFF;
+    }
+    return h;
+  }
+
+  void markWatched(String id) {
+    watched.remove(id);
+    watched.add(id);
+    if (watched.length > 600) watched.removeRange(0, watched.length - 600);
+    _p.setStringList('watched', watched);
+  }
+
+  // Порядок ленты новый при каждом запуске; непросмотренное раньше просмотренного; каналы чередуются.
+  List<Video> _mix(List<Video> list) {
+    final seen = watched.toSet();
+    final by = <String, List<Video>>{};
+    for (final v in list) {
+      by.putIfAbsent(v.channelId, () => []).add(v);
+    }
+    final order = by.keys.toList()
+      ..sort((a, b) => _hash(a + _seed).compareTo(_hash(b + _seed)));
+    for (final l in by.values) {
+      l.sort((a, b) {
+        final wa = seen.contains(a.id) ? 1 : 0;
+        final wb = seen.contains(b.id) ? 1 : 0;
+        if (wa != wb) return wa - wb;
+        return _hash(a.id + _seed).compareTo(_hash(b.id + _seed));
+      });
+    }
+    final out = <Video>[];
+    var i = 0;
+    var added = true;
+    while (added) {
+      added = false;
+      for (final k in order) {
+        final l = by[k]!;
+        if (i < l.length) {
+          out.add(l[i]);
+          added = true;
+        }
+      }
+      i++;
+    }
+    return out;
+  }
+
   List<Video> get visible {
     final on = channels.where((c) => c.enabled).map((c) => c.id).toSet();
     final w = words;
-    return videos
+    return _mix(videos
         .where((v) =>
             on.contains(v.channelId) &&
             !blockedVideos.contains(v.id) &&
             !catBlocked.contains(v.id) &&
             !isBlockedText(v.title, w))
-        .toList();
+        .toList());
   }
 
   Future<void> init() async {
@@ -44,6 +96,7 @@ class AppState extends ChangeNotifier {
     seedsSeen = (_p.getStringList('seedsSeen') ?? []).toSet();
     catStop = _p.getStringList('catStop') ?? [];
     catBlocked = (_p.getStringList('catBlocked') ?? []).toSet();
+    watched = _p.getStringList('watched') ?? [];
     try {
       final ch = _p.getString('channels');
       if (ch != null) {

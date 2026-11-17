@@ -127,7 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
         final present = <String>{
           for (final v in all) chById[v.channelId]?.cat ?? 'cartoons'
         };
-        final chs = app.channels.where((c) => c.enabled && c.resolved);
+        final hasVid = {for (final v in all) v.channelId};
+        final chs = app.channels
+            .where((c) => c.enabled && c.resolved && hasVid.contains(c.id));
         return Scaffold(
           appBar: AppBar(
             backgroundColor: const Color(0xFFFFF8F0),
