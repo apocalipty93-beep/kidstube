@@ -12,6 +12,8 @@ class AppState extends ChangeNotifier {
   List<Video> videos = [];
   Set<String> blockedVideos = {};
   Set<String> seedsSeen = {};
+  List<String> catStop = []; // стоп-слова из Telegram-бота
+  Set<String> catBlocked = {}; // видео, заблокированные через бота
   List<String> extraWords = [];
   String pin = '';
   bool autoNext = true;
@@ -19,7 +21,7 @@ class AppState extends ChangeNotifier {
   String? error;
   DateTime? lastRefresh;
 
-  List<String> get words => [...kStopWords, ...extraWords];
+  List<String> get words => [...kStopWords, ...extraWords, ...catStop];
 
   List<Video> get visible {
     final on = channels.where((c) => c.enabled).map((c) => c.id).toSet();
@@ -28,6 +30,7 @@ class AppState extends ChangeNotifier {
         .where((v) =>
             on.contains(v.channelId) &&
             !blockedVideos.contains(v.id) &&
+            !catBlocked.contains(v.id) &&
             !isBlockedText(v.title, w))
         .toList();
   }
@@ -39,6 +42,8 @@ class AppState extends ChangeNotifier {
     blockedVideos = (_p.getStringList('blockedVideos') ?? []).toSet();
     extraWords = _p.getStringList('extraWords') ?? [];
     seedsSeen = (_p.getStringList('seedsSeen') ?? []).toSet();
+    catStop = _p.getStringList('catStop') ?? [];
+    catBlocked = (_p.getStringList('catBlocked') ?? []).toSet();
     try {
       final ch = _p.getString('channels');
       if (ch != null) {
@@ -102,8 +107,19 @@ class AppState extends ChangeNotifier {
           .get(Uri.parse('$kCatalogUrl?t=$stamp'))
           .timeout(const Duration(seconds: 20));
       if (r.statusCode != 200) return false;
-      final list = (jsonDecode(utf8.decode(r.bodyBytes))['channels'] as List?) ?? [];
+      final body = jsonDecode(utf8.decode(r.bodyBytes)) as Map<String, dynamic>;
+      final list = (body['channels'] as List?) ?? [];
       var changed = false;
+      final sw = ((body['stopWords'] as List?) ?? []).map((x) => x.toString().toLowerCase()).toList();
+      final bv = ((body['blockedVideos'] as List?) ?? []).map((x) => x.toString()).toSet();
+      if (sw.join('|') != catStop.join('|')) {
+        catStop = sw;
+        changed = true;
+      }
+      if (bv.length != catBlocked.length || !bv.containsAll(catBlocked)) {
+        catBlocked = bv;
+        changed = true;
+      }
       for (final raw in list) {
         final e = raw as Map<String, dynamic>;
         final id = (e['id'] as String?) ?? '';
@@ -136,6 +152,11 @@ class AppState extends ChangeNotifier {
             ex.cat = cat;
             changed = true;
           }
+          final en = e['enabled'];
+          if (en is bool && ex.enabled != en) {
+            ex.enabled = en;
+            changed = true;
+          }
           continue;
         }
         channels.add(Channel(
@@ -146,6 +167,7 @@ class AppState extends ChangeNotifier {
           cat: cat,
           uploads: 'UU${id.substring(2)}',
           thumb: (e['thumb'] as String?) ?? '',
+          enabled: e['enabled'] != false,
         ));
         changed = true;
       }
@@ -167,6 +189,8 @@ class AppState extends ChangeNotifier {
     await _p.setStringList('blockedVideos', blockedVideos.toList());
     await _p.setStringList('extraWords', extraWords);
     await _p.setStringList('seedsSeen', seedsSeen.toList());
+    await _p.setStringList('catStop', catStop);
+    await _p.setStringList('catBlocked', catBlocked.toList());
     await _p.setBool('autoNext', autoNext);
     if (lastRefresh != null) {
       await _p.setInt('lastRefresh', lastRefresh!.millisecondsSinceEpoch);

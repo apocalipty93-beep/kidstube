@@ -5,7 +5,7 @@ var KT = (function () {
   var STORE = 'kt_state_v1';
   var DAY6 = 6 * 3600 * 1000;
 
-  var S = { channels: [], videos: [], blocked: [], extra: [], pin: '', autoNext: true, last: 0, seedsSeen: [] };
+  var S = { channels: [], videos: [], blocked: [], extra: [], pin: '', autoNext: true, last: 0, seedsSeen: [], catStop: [], catBlocked: [] };
   var st = { loading: false, error: null };
   var listeners = [];
 
@@ -56,11 +56,15 @@ var KT = (function () {
         if (ex) {
           if (!ex.id) { ex.id = e.id; ex.uploads = 'UU' + e.id.substring(2); changed = true; }
           if (e.cat && ex.cat !== e.cat) { ex.cat = e.cat; changed = true; }
+          if (typeof e.enabled === 'boolean' && ex.enabled !== e.enabled) { ex.enabled = e.enabled; changed = true; }
           return;
         }
-        S.channels.push({ id: e.id, title: e.title || e.handle || e.id, handle: e.handle || '', lang: e.lang || 'ru', cat: e.cat || 'cartoons', uploads: 'UU' + e.id.substring(2), thumb: e.thumb || '', enabled: true, custom: false });
+        S.channels.push({ id: e.id, title: e.title || e.handle || e.id, handle: e.handle || '', lang: e.lang || 'ru', cat: e.cat || 'cartoons', uploads: 'UU' + e.id.substring(2), thumb: e.thumb || '', enabled: e.enabled !== false, custom: false });
         changed = true;
       });
+      var sw = (j && j.stopWords) || [], bv = (j && j.blockedVideos) || [];
+      if (JSON.stringify(sw) !== JSON.stringify(S.catStop || [])) { S.catStop = sw; changed = true; }
+      if (JSON.stringify(bv) !== JSON.stringify(S.catBlocked || [])) { S.catBlocked = bv; changed = true; }
       if (changed) { save(); emit(); }
       return changed;
     })['catch'](function () { return false; });
@@ -92,7 +96,7 @@ var KT = (function () {
   var net = { http: defaultHttp };
   function get(path, q) { q.key = CFG.apiKey; return net.http(API + path + '?' + qs(q)); }
 
-  function words() { return (CFG.stopWords || []).concat(S.extra || []); }
+  function words() { return (CFG.stopWords || []).concat(S.extra || [], S.catStop || []); }
   function isBlockedText(text, ws) {
     var t = String(text).toLowerCase();
     for (var i = 0; i < ws.length; i++) {
@@ -234,7 +238,7 @@ var KT = (function () {
     S.channels.forEach(function (c) { if (c.enabled && c.id) { on[c.id] = true; } });
     var ws = words();
     return S.videos.filter(function (v) {
-      return on[v.channelId] && S.blocked.indexOf(v.id) === -1 && !isBlockedText(v.title, ws);
+      return on[v.channelId] && S.blocked.indexOf(v.id) === -1 && (S.catBlocked || []).indexOf(v.id) === -1 && !isBlockedText(v.title, ws);
     });
   }
 

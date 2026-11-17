@@ -178,7 +178,7 @@ def keyboard(cid, suggested):
 
 def card_text(p):
     lines = ['<b>%s</b>' % html.escape(p['title']),
-             '🌐 %s · предложено: %s' % ('русский' if p['lang'] == 'ru' else 'English', CATS[p['cat']])]
+             '🌐 %s · предложено: %s' % ({'ru': 'русский', 'en': 'English'}.get(p['lang'], p['lang'] + ' (не ru/en!)'), CATS[p['cat']])]
     if p.get('subs'):
         lines.append('👥 %s подписчиков' % format(p['subs'], ',').replace(',', ' '))
     for t in p.get('samples', [])[:3]:
@@ -231,14 +231,23 @@ def known_ids(state, catalog):
     return ids
 
 
-def discover(state, catalog, cfg, force=False):
-    words = [w.lower() for w in cfg.get('stopWords', [])]
-    resolve_seeds(state, cfg)
+def stop_words(cfg, catalog):
+    return [w.lower() for w in cfg.get('stopWords', [])] + [w.lower() for w in catalog.get('stopWords', [])]
+
+
+def lang_of(snippet, title, fallback):
+    dl = ((snippet or {}).get('defaultLanguage') or '')[:2].lower()
+    if dl in ('ru', 'en'):
+        return dl
+    if re.search('[а-яёА-ЯЁ]', title or ''):
+        return 'ru'
+    return dl or fallback
+
+
+def collect_candidates(picked, state, catalog, cfg):
+    """Поиск по запросам -> список каналов-кандидатов (после всех проверок)."""
+    words = stop_words(cfg, catalog)
     known = known_ids(state, catalog)
-    picked = []
-    for _ in range(QUERIES_PER_RUN):
-        picked.append(QUERIES[state['qIndex'] % len(QUERIES)])
-        state['qIndex'] = (state['qIndex'] + 1) % len(QUERIES)
     found = {}  # channelId -> {'cat','lang','vids':[...]}
     for q, lang, cat, recent in picked:
         params = dict(part='snippet', type='video', q=q, maxResults='25', safeSearch='strict',
@@ -274,7 +283,7 @@ def discover(state, catalog, cfg, force=False):
             e = found.setdefault(cid, {'cat': cat, 'lang': lang, 'vids': []})
             e['vids'].append(sn.get('title', ''))
     if not found:
-        return 0
+        return []
     cands = []
     ids = list(found.keys())
     for i in range(0, len(ids), 50):
@@ -308,11 +317,21 @@ def discover(state, catalog, cfg, force=False):
             if any(has_stop(t, words) for t in titles):
                 state['seen'][cid] = 'auto_rejected'
                 continue
-            cands.append({'id': cid, 'title': ch['snippet'].get('title', cid), 'lang': f['lang'], 'cat': f['cat'],
+            cands.append({'id': cid, 'title': ch['snippet'].get('title', cid), 'lang': lang_of(ch['snippet'], ch['snippet'].get('title', ''), f['lang']), 'cat': f['cat'],
                           'thumb': thumb_of(ch['snippet']), 'subs': subs,
                           'handle': (ch['snippet'].get('customUrl') or '').lstrip('@'),
                           'samples': [t for t in titles if t and t != 'Private video'][:3]})
     cands.sort(key=lambda c: -c['subs'])
+    return cands
+
+
+def discover(state, catalog, cfg, force=False):
+    resolve_seeds(state, cfg)
+    picked = []
+    for _ in range(QUERIES_PER_RUN):
+        picked.append(QUERIES[state['qIndex'] % len(QUERIES)])
+        state['qIndex'] = (state['qIndex'] + 1) % len(QUERIES)
+    cands = collect_candidates(picked, state, catalog, cfg)
     sent = 0
     for p in cands[:MAX_NEW_PER_RUN]:
         state['pending'][p['id']] = p
@@ -347,6 +366,8 @@ def upsert_channel(catalog, ch, status, cat=None):
     for c in catalog['channels']:
         if c['id'] == ch['id']:
             c['status'] = status
+            if status == 'approved':
+                c.pop('enabled', None)
             if cat:
                 c['cat'] = cat
             return
@@ -354,7 +375,101 @@ def upsert_channel(catalog, ch, status, cat=None):
                                 'cat': cat or 'cartoons', 'thumb': ch.get('thumb', ''), 'status': status})
 
 
+CAT_SHORT = {'cartoons': 'Мульт', 'english': 'Англ', 'learn': 'Обуч', 'music': 'Муз'}
+CAT_ORDER = list(CATS)
+PAGE = 25
+
+
+def find_entry(catalog, cid):
+    for c in catalog['channels']:
+        if c['id'] == cid:
+            return c
+    return None
+
+
+def all_channels(state, catalog, cfg):
+    """Все каналы, которые сейчас видит приложение: стартовые (с известным id) + из каталога."""
+    out = {}
+    for s in cfg.get('seeds', []):
+        cid = state['seedIds'].get(s['handle'])
+        if cid:
+            out[cid] = {'id': cid, 'title': s['name'], 'handle': s['handle'], 'lang': s['lang'],
+                        'cat': s['cat'], 'enabled': True, 'blocked': False}
+    for e in catalog['channels']:
+        cur = out.get(e['id'])
+        if not cur:
+            cur = out[e['id']] = {'id': e['id'], 'title': e.get('title', e['id']), 'handle': e.get('handle', ''),
+                                  'lang': e.get('lang', 'ru'), 'cat': e.get('cat', 'cartoons'),
+                                  'enabled': True, 'blocked': False}
+        if e.get('cat'):
+            cur['cat'] = e['cat']
+        if e.get('status') == 'blocked':
+            cur['blocked'] = True
+        if e.get('enabled') is False:
+            cur['enabled'] = False
+    return sorted([c for c in out.values() if not c['blocked']], key=lambda c: c['title'].lower())
+
+
+def ensure_entry(state, catalog, cfg, cid):
+    e = find_entry(catalog, cid)
+    if e:
+        return e
+    for c in all_channels(state, catalog, cfg):
+        if c['id'] == cid:
+            e = {'id': cid, 'title': c['title'], 'handle': c['handle'], 'lang': c['lang'], 'cat': c['cat'],
+                 'thumb': '', 'status': 'approved'}
+            catalog['channels'].append(e)
+            return e
+    return None
+
+
+def channel_action(state, catalog, cfg, act, cid):
+    e = ensure_entry(state, catalog, cfg, cid)
+    if not e:
+        return ('Канал не найден', False)
+    if act == 't':
+        e['enabled'] = not (e.get('enabled') is not False)
+        return ('Включён' if e['enabled'] else 'Выключен', True)
+    if act == 'k':
+        i = CAT_ORDER.index(e['cat']) if e.get('cat') in CAT_ORDER else 0
+        e['cat'] = CAT_ORDER[(i + 1) % len(CAT_ORDER)]
+        return ('Категория: ' + CATS[e['cat']], True)
+    e['status'] = 'blocked'
+    state['seen'][cid] = 'blocked'
+    return ('Канал удалён', True)
+
+
+def channels_pages(state, catalog, cfg):
+    chs = all_channels(state, catalog, cfg)
+    return [chs[i:i + PAGE] for i in range(0, len(chs), PAGE)]
+
+
+def channels_keyboard(page):
+    rows = []
+    for c in page:
+        label = ('✅ ' if c['enabled'] else '⏸ ') + c['title'][:20] + ' · ' + CAT_SHORT.get(c['cat'], '?')
+        rows.append([{'text': label, 'callback_data': 't:' + c['id']},
+                     {'text': '🏷', 'callback_data': 'k:' + c['id']},
+                     {'text': '🗑', 'callback_data': 'd:' + c['id']}])
+    return {'inline_keyboard': rows}
+
+
+def guess_cat(q):
+    q = q.lower()
+    for cat, keys in (('english', ('abc', 'alphabet', 'phonics', 'english', 'англ')),
+                      ('music', ('пианино', 'piano', 'песн', 'song', 'lullab', 'колыбел', 'музык', 'music')),
+                      ('learn', ('учим', 'обуч', 'educat', 'learn', 'развива', 'цифр', 'числ', 'colors', 'цвет'))):
+        if any(k in q for k in keys):
+            return cat
+    return 'cartoons'
+
+
 HELP = ('Команды:\n'
+        '/search запрос — найти каналы, например: /search пианино для детей\n'
+        '/channels — все каналы кнопками: вкл/выкл, категория 🏷, удалить 🗑\n'
+        '/video ссылка — заблокировать конкретное видео\n'
+        '/stop слово — добавить стоп-слово (/unstop слово — убрать)\n'
+        '/status — сводка\n'
         '/find — поискать новые каналы сейчас\n'
         '/add @handle [мультики|английский|обучение|музыка] — добавить канал сразу\n'
         '/block @handle — убрать канал и больше не показывать\n'
@@ -364,7 +479,7 @@ CAT_WORDS = {'мультики': 'cartoons', 'мульт': 'cartoons', 'англ
              'обучение': 'learn', 'обучалки': 'learn', 'музыка': 'music', 'песни': 'music'}
 
 
-def handle_text(state, catalog, chat, text):
+def handle_text(state, catalog, cfg, chat, text):
     """Возвращает (ответ, изменился ли каталог, запросить поиск)."""
     text = (text or '').strip()
     cmd = text.split()[0].split('@')[0].lower() if text else ''
@@ -373,6 +488,78 @@ def handle_text(state, catalog, chat, text):
         return (HELP, False, False)
     if cmd == '/find':
         return ('Ищу новые каналы…', False, True)
+    if cmd == '/search':
+        q = ' '.join(args).strip()
+        if not q:
+            return ('Напишите так: /search мультики про машинки', False, False)
+        today = time.strftime('%Y-%m-%d', time.gmtime())
+        if state.get('searchDay') != today:
+            state['searchDay'], state['searchCount'] = today, 0
+        if state['searchCount'] >= 40:
+            return ('Лимит поисков на сегодня (40) исчерпан, он обновится завтра.', False, False)
+        state['searchCount'] += 1
+        lang = 'ru' if re.search('[а-яё]', q.lower()) else 'en'
+        cands = collect_candidates([(q, lang, guess_cat(q), False)], state, catalog, cfg)
+        if not cands:
+            return ('Ничего подходящего не нашёл: либо всё найденное уже известно, либо не прошло проверку.', False, False)
+        for p in cands[:5]:
+            state['pending'][p['id']] = p
+            send_card(p)
+        return ('Нашёл каналов: %d. Карточки выше, выберите ✅ или ❌.' % min(5, len(cands)), False, False)
+    if cmd == '/channels':
+        if not state['seedIds']:
+            resolve_seeds(state, cfg)
+        pages = channels_pages(state, catalog, cfg)
+        if not pages:
+            return ('Каналов пока нет.', False, False)
+        for n, pg in enumerate(pages):
+            head = ('Каналы: нажмите на название — вкл/выкл, 🏷 — сменить категорию, 🗑 — удалить.'
+                    if n == 0 else 'Продолжение списка:')
+            tg_safe('sendMessage', chat_id=chat, text=head, reply_markup=channels_keyboard(pg))
+        return (None, False, False)
+    if cmd == '/video':
+        if not args:
+            return ('Напишите так: /video ссылка-на-видео', False, False)
+        m = re.search(r'(?:v=|youtu\.be/|shorts/|embed/)([A-Za-z0-9_-]{11})', args[0]) or re.fullmatch(r'([A-Za-z0-9_-]{11})', args[0])
+        if not m:
+            return ('Не распознал ссылку на видео.', False, False)
+        vid = m.group(1)
+        bl = catalog.setdefault('blockedVideos', [])
+        if vid in bl:
+            return ('Это видео уже заблокировано.', False, False)
+        bl.append(vid)
+        title = ''
+        try:
+            items = yt('videos', part='snippet', id=vid).get('items') or []
+            title = items[0]['snippet']['title'] if items else ''
+        except Exception:  # noqa: BLE001
+            pass
+        return ('🚫 Видео заблокировано' + (': ' + title if title else ''), True, False)
+    if cmd == '/stop':
+        sw = catalog.setdefault('stopWords', [])
+        if not args:
+            return ('Свои стоп-слова: ' + (', '.join(sw) or 'нет') + '\nДобавить: /stop слово', False, False)
+        raw = ' '.join(args)
+        parts_ = [w.strip().lower() for w in raw.split(',')] if ',' in raw else [a.lower() for a in args]
+        new = [w for w in parts_ if w and w not in sw]
+        sw.extend(new)
+        return ('Добавлено: ' + (', '.join(new) or 'ничего нового'), bool(new), False)
+    if cmd == '/unstop':
+        sw = catalog.setdefault('stopWords', [])
+        gone = [a.lower() for a in args if a.lower() in sw]
+        catalog['stopWords'] = [w for w in sw if w not in gone]
+        return ('Убрано: ' + (', '.join(gone) or 'ничего'), bool(gone), False)
+    if cmd == '/status':
+        chs = all_channels(state, catalog, cfg)
+        on = sum(1 for c in chs if c['enabled'])
+        blocked = sum(1 for e in catalog['channels'] if e.get('status') == 'blocked')
+        last = state.get('lastDiscover') or 0
+        ls = datetime.fromtimestamp(last + 5 * 3600, timezone.utc).strftime('%d.%m %H:%M') if last else 'ещё не было'
+        miss = sum(1 for v in state['seedIds'].values() if not v)
+        return ('📊 Каналов: %d (включено %d), удалено: %d\nЖдут решения: %d\nСвоих стоп-слов: %d, заблокированных видео: %d\n'
+                'Не найдено стартовых: %d\nПоследний поиск: %s (UTC+5)' %
+                (len(chs), on, blocked, len(state['pending']), len(catalog.get('stopWords', [])),
+                 len(catalog.get('blockedVideos', [])), miss, ls), False, False)
     if cmd == '/list':
         by = {}
         for c in catalog['channels']:
@@ -412,7 +599,7 @@ def handle_text(state, catalog, chat, text):
     return (HELP, False, False)
 
 
-def handle_update(state, catalog, u):
+def handle_update(state, catalog, cfg, u):
     """Возвращает (изменился ли каталог, запросить поиск)."""
     changed, want = False, False
     if 'callback_query' in u:
@@ -425,6 +612,18 @@ def handle_update(state, catalog, u):
             res, changed = decide(state, catalog, parts[2], 'a', parts[1])
         elif parts[0] == 'b' and len(parts) == 2:
             res, changed = decide(state, catalog, parts[1], 'b')
+        elif parts[0] in ('t', 'k', 'd') and len(parts) == 2:
+            idx = 0
+            for n, pg in enumerate(channels_pages(state, catalog, cfg)):
+                if any(c['id'] == parts[1] for c in pg):
+                    idx = n
+            res, changed = channel_action(state, catalog, cfg, parts[0], parts[1])
+            tg_safe('answerCallbackQuery', callback_query_id=cq['id'], text=res)
+            pages = channels_pages(state, catalog, cfg)
+            if pages:
+                tg_safe('editMessageReplyMarkup', chat_id=cq['message']['chat']['id'], message_id=cq['message']['message_id'],
+                        reply_markup=channels_keyboard(pages[min(idx, len(pages) - 1)]))
+            return (changed, False)
         else:
             return (False, False)
         tg_safe('answerCallbackQuery', callback_query_id=cq['id'], text=res)
@@ -438,8 +637,9 @@ def handle_update(state, catalog, u):
         return (changed, False)
     m = u.get('message')
     if m and str(m.get('chat', {}).get('id', '')) in CHATS:
-        res, changed, want = handle_text(state, catalog, m['chat']['id'], m.get('text', ''))
-        tg_safe('sendMessage', chat_id=m['chat']['id'], text=res)
+        res, changed, want = handle_text(state, catalog, cfg, m['chat']['id'], m.get('text', ''))
+        if res:
+            tg_safe('sendMessage', chat_id=m['chat']['id'], text=res)
     return (changed, want)
 
 
@@ -473,6 +673,18 @@ def main():
     for k, v in {'offset': 0, 'lastDiscover': 0, 'qIndex': 0, 'seedIds': {}, 'missingReported': [], 'seen': {}, 'pending': {}}.items():
         state.setdefault(k, v)
     catalog = load_json(CATALOG_PATH, {'updated': '', 'channels': []})
+    catalog.setdefault('stopWords', [])
+    catalog.setdefault('blockedVideos', [])
+    tg_safe('setMyCommands', commands=[
+        {'command': 'search', 'description': 'Найти каналы: /search запрос'},
+        {'command': 'channels', 'description': 'Каналы: вкл/выкл, категория, удалить'},
+        {'command': 'find', 'description': 'Искать новые каналы сейчас'},
+        {'command': 'add', 'description': 'Добавить канал: /add @handle'},
+        {'command': 'block', 'description': 'Убрать канал: /block @handle'},
+        {'command': 'video', 'description': 'Заблокировать видео по ссылке'},
+        {'command': 'stop', 'description': 'Стоп-слово: /stop слово'},
+        {'command': 'status', 'description': 'Сводка'},
+    ])
     want = time.time() - state['lastDiscover'] > DISCOVER_EVERY
     deadline = time.time() + LISTEN_SECONDS
     offset = state['offset'] or None
@@ -503,7 +715,7 @@ def main():
         for u in updates:
             offset = u['update_id'] + 1
             try:
-                ch, w = handle_update(state, catalog, u)
+                ch, w = handle_update(state, catalog, cfg, u)
             except Exception as e:  # noqa: BLE001
                 log('update error', str(e).replace(TOKEN, '***'))
                 continue
