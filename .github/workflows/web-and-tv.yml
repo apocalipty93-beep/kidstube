@@ -58,7 +58,7 @@ jobs:
           sed -i "s|__SITE_URL__|$URL|g" webos/index.html
       - name: Собрать .ipk
         run: |
-          npm install -g @webos-tooling/cli
+          npm install -g @webos-tools/cli
           ares-package webos --outdir out
           ls -la out
       - uses: actions/upload-artifact@v4
