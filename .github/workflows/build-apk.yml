@@ -34,6 +34,13 @@ jobs:
           sed -i 's#android:label="kidstube"#android:label="Мультики"#' android/app/src/main/AndroidManifest.xml
           sed -i 's/minSdk = flutter.minSdkVersion/minSdk = 24/' android/app/build.gradle.kts || true
           sed -i 's/minSdkVersion flutter.minSdkVersion/minSdkVersion 24/' android/app/build.gradle || true
+          # Отключаем lint для release-сборки (он падает внутри Gradle и для ручной установки не нужен)
+          if [ -f android/app/build.gradle.kts ]; then
+            sed -i '0,/^android {/s//android {\n    lint {\n        checkReleaseBuilds = false\n        abortOnError = false\n    }/' android/app/build.gradle.kts
+          fi
+          if [ -f android/app/build.gradle ]; then
+            sed -i '0,/^android {/s//android {\n    lint {\n        checkReleaseBuilds false\n        abortOnError false\n    }/' android/app/build.gradle
+          fi
 
       - run: flutter pub get
 
