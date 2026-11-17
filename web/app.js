@@ -3,6 +3,7 @@
   var S = KT.S;
   var root = document.getElementById('app');
   var view = 'home';        // home | player | parent
+  var query = '';
   var filter = 'all';       // all | ru | en | cat:<id> | ch:<id>
   var newCat = 'cartoons';  // категория для вручную добавляемого канала
   var newText = '';
@@ -53,6 +54,10 @@
 
   /* ---------- главная ---------- */
   function applyFilter(all) {
+    var q = query.replace(/^\s+|\s+$/g, '').toLowerCase();
+    if (q) {
+      return all.filter(function (v) { return (v.title + ' ' + v.channelTitle).toLowerCase().indexOf(q) !== -1; });
+    }
     if (filter === 'ru' || filter === 'en') { return all.filter(function (v) { return v.lang === filter; }); }
     if (filter.indexOf('cat:') === 0) {
       var cid = filter.slice(4), on = {};
@@ -71,6 +76,23 @@
     ]);
     var c = h('div', { class: 'card' }, [thumb, h('div', { class: 't', text: v.title }), h('div', { class: 'c', text: v.channelTitle })]);
     return foc(c, 'v-' + v.id, function () { openPlayer(v, list); });
+  }
+
+  var searchTimer = null;
+  function searchBox() {
+    var inp = h('input', { class: 'search', type: 'search', placeholder: 'Поиск мультиков…', 'data-f': '1', 'data-key': 'search', autocomplete: 'off' });
+    inp.value = query;
+    function go() {
+      clearTimeout(searchTimer);
+      var pos = inp.selectionStart;
+      query = inp.value;
+      renderHome('search');
+      var n = root.querySelector('[data-key="search"]');
+      if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) {} }
+    }
+    inp.addEventListener('input', function () { clearTimeout(searchTimer); searchTimer = setTimeout(go, 450); });
+    inp.addEventListener('keydown', function (e) { if (e.keyCode === 13) { go(); } });
+    return inp;
   }
 
   function renderHome(keepKey) {
@@ -93,6 +115,7 @@
     root.appendChild(h('div', { class: 'head' }, [
       h('div', { class: 'logo' }, [h('i'), 'Мультики']),
       h('div', { class: 'spacer' }),
+      searchBox(),
       btn('Обновить', 'refresh', function () { KT.refresh(); }),
       btn('Родителям', 'parent', function () { askPin(function () { renderParent(); }); })
     ]));
@@ -128,7 +151,7 @@
     } else if (!all.length) {
       root.appendChild(h('div', { class: 'msg', text: KT.st.error || 'Пока нет мультиков. Нажмите «Обновить».' }));
     } else if (!list.length) {
-      root.appendChild(h('div', { class: 'msg', text: 'Ничего не найдено' }));
+      root.appendChild(h('div', { class: 'msg', text: query ? 'По запросу «' + query + '» ничего нет' : 'Ничего не найдено' }));
     } else {
       var grid = h('div', { class: 'grid' });
       list.forEach(function (v) { grid.appendChild(card(v, list)); });

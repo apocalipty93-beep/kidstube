@@ -275,7 +275,7 @@ var KT = (function () {
         }
         i++;
       }
-      if (merged.length) { S.videos = merged; S.last = Date.now(); }
+      if (merged.length) { S.videos = merged; S.ver = 2; S.last = Date.now(); }
       else if (firstErr) { st.error = 'Не удалось загрузить: ' + firstErr; }
       save();
     })['catch'](function (e) {
@@ -341,7 +341,7 @@ var KT = (function () {
     addSeeds();
     emit();
     return syncCatalog().then(function (changed) {
-      var stale = !S.last || (Date.now() - S.last) > DAY6;
+      var stale = !S.last || S.ver !== 2 || (Date.now() - S.last) > DAY6;
       if (changed || !S.videos.length || stale) { return refresh(); }
     });
   }
