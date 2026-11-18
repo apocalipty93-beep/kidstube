@@ -1,7 +1,7 @@
 {
   "offset": 579252825,
-  "lastDiscover": 1794905236,
-  "qIndex": 4,
+  "lastDiscover": 1795008496,
+  "qIndex": 8,
   "seedIds": {
     "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
     "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
@@ -64,7 +64,25 @@
     "UCSVSJ1OCSv5ClFgKFTHIDew": "approved",
     "UC5mNk1y0O1awxC8DucC8r0w": "approved",
     "UCEC-8nMiuXYH2QUs0yYcHTQ": "blocked",
-    "UCRlB2qa4GuP2dTXVrKJh83w": "auto_rejected"
+    "UCRlB2qa4GuP2dTXVrKJh83w": "auto_rejected",
+    "UCF6-n87meHTbBzZIAibRpMw": "auto_rejected",
+    "UC6SyiVWGViNSKF5-UOAuQ5w": "auto_rejected",
+    "UCVcQH8A634mauPrGbWs7QlQ": "auto_rejected",
+    "UCk8GzjMOrta8yxDcKfylJYw": "auto_rejected",
+    "UChxZrhm00T90YTei9oYkmGQ": "auto_rejected",
+    "UCBRhVWJO0jPqyPBHKgGSnpA": "auto_rejected",
+    "UC5PYHgAzJ1wLEidB58SK6Xw": "auto_rejected",
+    "UCe1VpF4wS_kdcjyTRSXBcnQ": "auto_rejected",
+    "UC56cowXhoqRWHeqfSJkIQaA": "auto_rejected",
+    "UC-WCouYqsCDnQTW3C5MzyiA": "auto_rejected",
+    "UCLy6-72NzYpFztbJ7jNEMkg": "auto_rejected",
+    "UChsBxlwe3VjPRt1ES4rIT4g": "auto_rejected",
+    "UCAJnyTWJPpKXuwgWQDdNWrQ": "auto_rejected",
+    "UCp5Nhw2YMCMUemXC1oWTkkA": "auto_rejected",
+    "UCOYd4Al0Ty89xigE-l9AIog": "auto_rejected",
+    "UC6iyrmtXY7E3QwI-J3PlX-A": "auto_rejected",
+    "UCaDX8Eff3rzIBjycTGECLUQ": "auto_rejected",
+    "UCx790OVgpTC1UVBQIqu3gnQ": "auto_rejected"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -107,6 +125,90 @@
         "Circus King Guddu Ka Hungama | Guddu New Adventure Series | Animated Series",
         "Motu Bana Invisible Man | Hindi Cartoon For Kids | Animated Series",
         "Titoo Ka Favorite Cake | Titoo Funny Cartoon Compilation | Hindi Cartoon for Kids #titoo"
+      ]
+    },
+    "UCvlE5gTbOvjiolFlEm-c_Ow": {
+      "id": "UCvlE5gTbOvjiolFlEm-c_Ow",
+      "title": "Vlad and Niki",
+      "lang": "en",
+      "cat": "english",
+      "thumb": "https://yt3.ggpht.com/il7dQx5fz3qs2ykOvWQVhtjT-_grY_oPmXlah13q694r_5zUS_7M33pBuUC34Cq0VearBaT1NOE=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 151000000,
+      "handle": "vladandniki",
+      "samples": [
+        "Learn Good Habits with a Sweet Machine | Useful Stories for Kids",
+        "Little driver and other Kids Songs with Vlad and Niki",
+        "Kids play with imoo Minions Smartwatches and save the day!"
+      ]
+    },
+    "UCBrV_is2j-XaQShG36QtEKQ": {
+      "id": "UCBrV_is2j-XaQShG36QtEKQ",
+      "title": "HeyKids - Песни Для Детей",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/3V96OowJ-t_s6qcB_TPbd4AqjDhXodQ1F-fIACRW7tfN-S9z4YqciGujT3pIQ6cXyp_gR1wU6oI=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 5610000,
+      "handle": "heykids_ru",
+      "samples": [
+        "🎶 Все Животные Джунглей и Фермы 🥁🦁 Весёлые Песни о Животных для Детей | HeyKids",
+        "🚜 Едет Трактор и Поют Животные 🐮🥁 Песни про Ферму и Домашних Животных | HeyKids",
+        "Новый Год Приходит Снова 🎅🎄 Новогодняя Песенка для Детей и Малышей | HeyKids"
+      ]
+    },
+    "UC1J5R-2zsrrICAYmkt5g_6Q": {
+      "id": "UC1J5R-2zsrrICAYmkt5g_6Q",
+      "title": "Patty Shukla Kids TV - Children's songs",
+      "lang": "en",
+      "cat": "english",
+      "thumb": "https://yt3.ggpht.com/L5T0JcqyTsPdkG6fiNjeUthXg8_5Fm4vkh8mFLTrsKtxMR8cQ3AdKD4bwPQO4sTWgER91RWc=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 3980000,
+      "handle": "pattyshukla",
+      "samples": [
+        "You Are My Sunshine | Patty Shukla Kids TV | Sing Along Songs for Kids",
+        "You Are My Sunshine",
+        "Free Personalized Video for Your Kids. #giveaway #shorts #singalong #cameo"
+      ]
+    },
+    "UCExx109KH5msQR0n52ZzyAw": {
+      "id": "UCExx109KH5msQR0n52ZzyAw",
+      "title": "Rock 'N Learn",
+      "lang": "en",
+      "cat": "english",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_kHIXtOTG1WPPaMSChUX-awoExtuUdbd7TkdQzWlAiBYqg=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 3790000,
+      "handle": "rocknlearn",
+      "samples": [
+        "Learn Filipino (Tagalog) for Kids | Food, Activities & Animals",
+        "Learn Filipino (Tagalog) for Kids | Useful Filipino Phrases for Beginners",
+        "Learn Vietnamese for Kids | Useful Vietnamese Phrases for Beginners"
+      ]
+    },
+    "UCRaC_9WVNkT7D4XJrK713Mw": {
+      "id": "UCRaC_9WVNkT7D4XJrK713Mw",
+      "title": "Kiddos World TV",
+      "lang": "en",
+      "cat": "english",
+      "thumb": "https://yt3.ggpht.com/y0Or52ZIjsHLXyKi-XImrjfOMhC_d__M06xCWNMCmKvPpJYNOlGUZ83IXV8qG-Q5Fe5-4d7-=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 2590000,
+      "handle": "kiddosworldtv",
+      "samples": [
+        "Learn ABC with Animals!  | Animal Alphabet A to Z & Fun Facts for Kids",
+        "Learn How to Write Uppercase Letter N with Miss V! | ABC Writing for Kids | Kiddos World TV",
+        "Learn ABC Alphabet A to Z with Miss V! | ABC Words for Kids | Kiddos World TV"
+      ]
+    },
+    "UCespeLEoaF0_b1ElZz_rHRw": {
+      "id": "UCespeLEoaF0_b1ElZz_rHRw",
+      "title": "Tora the Teacher",
+      "lang": "en",
+      "cat": "english",
+      "thumb": "https://yt3.ggpht.com/LNdYuBmPaz9si-SuSomPTI8jmvFO7DcS8WrV7Iizz9zzwyfokpH2GlrgB0glGBO3S_d8qwiC=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 1730000,
+      "handle": "tora_the_teacher",
+      "samples": [
+        "My Morning Routine! | Brush Teeth, Get Dressed & Eat Breakfast | Kids Learning Video",
+        "Learn Body Parts for Kids | Head, Body, Arms & Legs | Preschool Learning Video",
+        "Plant Flowers & Count to 20 | Toddler Learning Video | Tora x Speech Blubs"
       ]
     }
   },
