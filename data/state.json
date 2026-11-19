@@ -1,5 +1,5 @@
 {
-  "offset": 579252825,
+  "offset": 579252828,
   "lastDiscover": 1795085227,
   "qIndex": 12,
   "seedIds": {
@@ -101,7 +101,8 @@
     "UCqHyqb1DqKbQ1pq6_84ZVYw": "auto_rejected",
     "UCS94J1s6-qc8v7btCdS2pNg": "auto_rejected",
     "UCIqtzr5Izq1gae6THTtvATA": "auto_rejected",
-    "UCrFOzum0MjAHgA3qaHHwn8w": "auto_rejected"
+    "UCrFOzum0MjAHgA3qaHHwn8w": "auto_rejected",
+    "UCnSvgwG4lWWbJaoYlD5eTyw": "approved"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -270,20 +271,6 @@
         "Пи-пи, У! Споём за двоих?",
         "Миска каши и мандарины: накрываем стол с Цветняшками",
         "Было четыре микроба. Сколько осталось?"
-      ]
-    },
-    "UCnSvgwG4lWWbJaoYlD5eTyw": {
-      "id": "UCnSvgwG4lWWbJaoYlD5eTyw",
-      "title": "Моя звёздочка",
-      "lang": "ru",
-      "cat": "learn",
-      "thumb": "https://yt3.ggpht.com/ytc/AIdro_nA5KsJZAND5ZVtMAXajBB0guepHBzlHB8nPH6PGhFbHNk=s240-c-k-c0x00ffffff-no-rj",
-      "subs": 1650000,
-      "handle": "mylittlestarru",
-      "samples": [
-        "котёнок",
-        "курица",
-        "утёнок"
       ]
     },
     "UCSvaVkjq3WyfuLTeGWoYNGQ": {

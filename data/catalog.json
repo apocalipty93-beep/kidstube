@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-17T16:25:26Z",
+  "updated": "2026-11-19T10:47:21Z",
   "channels": [
     {
       "id": "UC3_ZmN_g5Z_M6F-MrAxzyxg",
@@ -36,6 +36,15 @@
       "cat": "cartoons",
       "thumb": "https://yt3.ggpht.com/ytc/AIdro_l4SHUQSIszX3C37X8Ba7VDVgINWNnynw8GF4wLSYN6amI=s240-c-k-c0x00ffffff-no-rj",
       "status": "blocked"
+    },
+    {
+      "id": "UCnSvgwG4lWWbJaoYlD5eTyw",
+      "title": "Моя звёздочка",
+      "handle": "mylittlestarru",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_nA5KsJZAND5ZVtMAXajBB0guepHBzlHB8nPH6PGhFbHNk=s240-c-k-c0x00ffffff-no-rj",
+      "status": "approved"
     }
   ],
   "stopWords": [],
