@@ -1,7 +1,7 @@
 {
   "offset": 579252825,
-  "lastDiscover": 1795008496,
-  "qIndex": 8,
+  "lastDiscover": 1795085227,
+  "qIndex": 12,
   "seedIds": {
     "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
     "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
@@ -82,7 +82,26 @@
     "UCOYd4Al0Ty89xigE-l9AIog": "auto_rejected",
     "UC6iyrmtXY7E3QwI-J3PlX-A": "auto_rejected",
     "UCaDX8Eff3rzIBjycTGECLUQ": "auto_rejected",
-    "UCx790OVgpTC1UVBQIqu3gnQ": "auto_rejected"
+    "UCx790OVgpTC1UVBQIqu3gnQ": "auto_rejected",
+    "UCC-o1DSa6pJjLqlmr9s3w8A": "auto_rejected",
+    "UC3aVeoLde-l7GDpT22oDoPA": "auto_rejected",
+    "UC1VCt1ecU8In4va9F27ElbQ": "auto_rejected",
+    "UC3wCAOfSB0W9iuKDDtNJeGw": "auto_rejected",
+    "UCOVY28BaODA4pvyz_9jM5OA": "auto_rejected",
+    "UC2RNg_QGZriSGQo6enPLpeQ": "auto_rejected",
+    "UComtsapyeiIgMYzuRiGdR9g": "auto_rejected",
+    "UCFqZse7pFQXgKyN91ARinMw": "auto_rejected",
+    "UCI3dKg_6NBxzy9VrhyaoduQ": "auto_rejected",
+    "UCdZ93zOnstul7Yj86I1m1Sg": "auto_rejected",
+    "UCUUkoEAFFLEEZnF9UFYEcjw": "auto_rejected",
+    "UCvWJdT4v0ispz1rKt8YofdA": "auto_rejected",
+    "UCPvEbO2bI5x1MVLUuRJoZXg": "auto_rejected",
+    "UCZzfOkvfLKdKYEWAZ_Vc0zg": "auto_rejected",
+    "UC1TifSSmOtnR7fYBwHgM3FA": "auto_rejected",
+    "UCqHyqb1DqKbQ1pq6_84ZVYw": "auto_rejected",
+    "UCS94J1s6-qc8v7btCdS2pNg": "auto_rejected",
+    "UCIqtzr5Izq1gae6THTtvATA": "auto_rejected",
+    "UCrFOzum0MjAHgA3qaHHwn8w": "auto_rejected"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -209,6 +228,90 @@
         "My Morning Routine! | Brush Teeth, Get Dressed & Eat Breakfast | Kids Learning Video",
         "Learn Body Parts for Kids | Head, Body, Arms & Legs | Preschool Learning Video",
         "Plant Flowers & Count to 20 | Toddler Learning Video | Tora x Speech Blubs"
+      ]
+    },
+    "UCK5Q72Uyo73uRPk8PmM2A3w": {
+      "id": "UCK5Q72Uyo73uRPk8PmM2A3w",
+      "title": "Genevieve's Playhouse - Learning Videos for Kids",
+      "lang": "en",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_kbIC31vc6vnxLlz_EpLvg_xxTI3MuN2dq7klx_4g_qBuk=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 51300000,
+      "handle": "genevievesplayhouse",
+      "samples": [
+        "El mejor juguete educativo para bebés: ¡clasificación de alimentos en una cesta!",
+        "Let's Build a House Marble Maze!",
+        "¡Huevos sorpresa de Yoshi! ¡Aprende los colores y los animales en español e inglés!"
+      ]
+    },
+    "UCZBu4SD7RaHHwKJqjtE1KGw": {
+      "id": "UCZBu4SD7RaHHwKJqjtE1KGw",
+      "title": "edubuzzkids",
+      "lang": "en",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_k9ZffkrzlF6m36DbMu-i6xXeI41tRgjPW_W4UkkcPlWN8=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 4030000,
+      "handle": "edubuzzkids",
+      "samples": [
+        "Fox and Rabbit fun with the Ice Cream Truck",
+        "Elephant Help Pluck Some Apples for Fox and Rabbit",
+        "Hippo Teaches Hip Hop to Fox and Rabbit"
+      ]
+    },
+    "UCT-bVk6Ng_qwBoPp6DcNFHg": {
+      "id": "UCT-bVk6Ng_qwBoPp6DcNFHg",
+      "title": "Цветняшки — Песенки для детей",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/1yDOJWEwxKVQIZKvwuKEfEGQymqcEGYBGlO6HtZ9p6YhyPcJOjgdlEN0WspteZFFNUuTehTZ=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 2010000,
+      "handle": "tsvetnyashki_songs",
+      "samples": [
+        "Пи-пи, У! Споём за двоих?",
+        "Миска каши и мандарины: накрываем стол с Цветняшками",
+        "Было четыре микроба. Сколько осталось?"
+      ]
+    },
+    "UCnSvgwG4lWWbJaoYlD5eTyw": {
+      "id": "UCnSvgwG4lWWbJaoYlD5eTyw",
+      "title": "Моя звёздочка",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_nA5KsJZAND5ZVtMAXajBB0guepHBzlHB8nPH6PGhFbHNk=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 1650000,
+      "handle": "mylittlestarru",
+      "samples": [
+        "котёнок",
+        "курица",
+        "утёнок"
+      ]
+    },
+    "UCSvaVkjq3WyfuLTeGWoYNGQ": {
+      "id": "UCSvaVkjq3WyfuLTeGWoYNGQ",
+      "title": "Ладушки - Ладушки",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_kBzpoiArDAle4Qsz6_eHZndIoa6BaRBxlplFWda-uQ428=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 906000,
+      "handle": "ladushki_ladushki",
+      "samples": [
+        "🚌 Машинки для малышей | Учим транспорт - развивающие мультики для детей | Ладушки-Ладушки",
+        "🥕 Учим овощи для малышей 🍅 Развитие речи и первые слова | Ладушки-Ладушки",
+        "🍌Учим фрукты и ягоды для малышей 🍎 Развивающий мультик | Ладушки-Ладушки"
+      ]
+    },
+    "UCrV3j4NsS3Jbggys-flVSDA": {
+      "id": "UCrV3j4NsS3Jbggys-flVSDA",
+      "title": "Малышман ТВ",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_nl0kVkVjvGXDGMXhe8323uNnEbPZw_Z9qqQ9nX9312=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 886000,
+      "handle": "malyshman",
+      "samples": [
+        "Мультики для малышей. Песенка про часы. Часики тик-так, тикают вот так",
+        "Добрые мультики для детей. Библия в картинках для малышей: ЗЕМЛЯ. Учимся с Масиком и Малышкой",
+        "Фрукты и овощи для малышей. Учимся с Масиком и Малышкой: загадки про овощи и фрукты"
       ]
     }
   },
