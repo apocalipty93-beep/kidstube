@@ -1,7 +1,7 @@
 {
   "offset": 579252828,
-  "lastDiscover": 1795085227,
-  "qIndex": 12,
+  "lastDiscover": 1795163934,
+  "qIndex": 1,
   "seedIds": {
     "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
     "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
@@ -102,7 +102,19 @@
     "UCS94J1s6-qc8v7btCdS2pNg": "auto_rejected",
     "UCIqtzr5Izq1gae6THTtvATA": "auto_rejected",
     "UCrFOzum0MjAHgA3qaHHwn8w": "auto_rejected",
-    "UCnSvgwG4lWWbJaoYlD5eTyw": "approved"
+    "UCnSvgwG4lWWbJaoYlD5eTyw": "approved",
+    "UCPnbrmnCXxmRm5uKPYzyxpg": "auto_rejected",
+    "UCtfaw89HmL1j04097upVEoQ": "auto_rejected",
+    "UCi71i53ZD-ljmnzz7YF0tkw": "auto_rejected",
+    "UCYmgUdthtWRCB88nqbLRDtw": "auto_rejected",
+    "UC28DEb3U0l_n-guvIDbcNIA": "auto_rejected",
+    "UC_2dqNdnuhgF2kp-2bbS_1A": "auto_rejected",
+    "UCy9lzns7QcoPG7kbK6RYefQ": "auto_rejected",
+    "UCYinbh7XE6-t6Y4jbY_YHGg": "auto_rejected",
+    "UC_LnnCe2WB6RrPjyGoelaYg": "auto_rejected",
+    "UC1AgGpLOTjmLFMGVLjoCUNg": "auto_rejected",
+    "UCyOfqgtsQaM3S-VZnsYnHjQ": "auto_rejected",
+    "UCWRCOlr3I6eZy3hXfDl7bEg": "auto_rejected"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -299,6 +311,90 @@
         "Мультики для малышей. Песенка про часы. Часики тик-так, тикают вот так",
         "Добрые мультики для детей. Библия в картинках для малышей: ЗЕМЛЯ. Учимся с Масиком и Малышкой",
         "Фрукты и овощи для малышей. Учимся с Масиком и Малышкой: загадки про овощи и фрукты"
+      ]
+    },
+    "UClZkHt2kNIgyrTTPnSQV3SA": {
+      "id": "UClZkHt2kNIgyrTTPnSQV3SA",
+      "title": "Get Movies",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/LJtHidoRaUOdr8hGP8dsMAWA2k2ETbgkSGBxbF6bGIxV4K5IjEoR0LVnzm_te32fV8esryFI=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 57200000,
+      "handle": "getmovies",
+      "samples": [
+        "Грузовичок Олли 🚚 Новые приключения! Все серии 22–28 подряд 🚗 Мультфильмы про машинки",
+        "🔴 ПРЯМОЙ ЭФИР! LIVE Маша и Медведь 👱‍♀️🐻 Смотрим ВСЕ серии подряд!🍿 Проведи время с Машей! 💜",
+        "НАСТОЕНИЕ КОТЭ - Котёнок Котэ и его песенки для детей"
+      ]
+    },
+    "UCNcdbMyA59zE-Vk668bKWOg": {
+      "id": "UCNcdbMyA59zE-Vk668bKWOg",
+      "title": "Disney Jr. ",
+      "lang": "en",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/ycmH6u_8GXdVOSwL8K8D0QSLxzoJvd6yiRORWT0QYosXdtBBOkqQdXTR4DS6kDHd-U49Z3dcpHY=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 28700000,
+      "handle": "disneyjr",
+      "samples": [
+        "\"The Night Symbie Saved Christmas\" From Marvel's Spidey and his Amazing Friends! 🎄🕷️🎵 | Disney Jr.",
+        "Mickey’s Birthday Celebration! 🎂🎊 | LEGO® DUPLO® Short | Mickey Mouse Clubhouse+ | Disney Jr.",
+        "Ozzy Fox Official Trailer! 🦊🎬 | Disney Jr."
+      ]
+    },
+    "UCqZZoXlUEki3H7_GCQrw53A": {
+      "id": "UCqZZoXlUEki3H7_GCQrw53A",
+      "title": "Теремок - Песенки для детей",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_nXDxvch0y1k8zU5kzfqrm-eKSB74ai2uC5Dw7JedDBHnc=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 14400000,
+      "handle": "teremoksongs",
+      "samples": [
+        "СПРАВА - СЛЕВА - ТракТЫРишкА - Развивающие и Обучающие Песенки для детей",
+        "Незнакомец #мультики #shorts #Жилабыла #Царевна",
+        "В темноте - Песенки Котенка Котэ для детей"
+      ]
+    },
+    "UCtV9MJJh8uErNje2amzl4DA": {
+      "id": "UCtV9MJJh8uErNje2amzl4DA",
+      "title": "Мультфильмы",
+      "lang": "ru",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/VKgCGH8WlrU5uR9ce-Dz_J5QnkFYyOXgaqIMN3KAm_93HL47FfYIR46UYXcyCVJ2k3iGIX0n=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 4020000,
+      "handle": "teremokcartoons",
+      "samples": [
+        "Мультики для девочек - Шушумагия - ВСЕ СЕРИИ с 46 по 52",
+        "Тима и Тома - Детективы  + Только никому!  😍 Мультфильм  - Приключенческий мультик",
+        "Лекс и Плу. ТАКСИСТЫ В КОСМОСЕ - 31 СЕРИЯ - Потерянный свет"
+      ]
+    },
+    "UCEeeo3Ckg4mXuZkyY1RiTrQ": {
+      "id": "UCEeeo3Ckg4mXuZkyY1RiTrQ",
+      "title": "Развивайки, обучайки. Наше ВСЁ!",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/70h6Wl2LnD89tNRfmWOG6oomJvYZ1CQqU8nUflws2gQCEKU0cncEZcs07cUVWKjRihtWF2KpQQ=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 3590000,
+      "handle": "nashe-vse",
+      "samples": [
+        "Раз пошли зверята на лужок / Мульт-песенка 🎶(хоровод зверят). Наше всё!",
+        "ПО КОЧКАМ 🚗 (едем мы, едем). Мульт-песенка 🎶. Наше всё!",
+        "ЕСЛИ ТЫ КАК И Я! 🕺Танцевальная мульт-песенка 🎵. Наше всё!"
+      ]
+    },
+    "UCwRfWpQ6NFX6cBiZA--OMuA": {
+      "id": "UCwRfWpQ6NFX6cBiZA--OMuA",
+      "title": "Lalafun - Kinderlieder & Kinderreime",
+      "lang": "en",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/yA_MCRt3v4AwBuh74kNwRS-mnTn6yZSYiI26-Hbb-labe5G_qjYO_VwvlzDsGsZe7uQ7l7OL_eg=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 2760000,
+      "handle": "nursery_rhymes",
+      "samples": [
+        "Planets Song! Explore Our Solar System | Nursery Rhymes & Kids Songs",
+        "Ten Toys on the Bed! Roll Over and Count | Funny Nursery Rhymes",
+        "It’s Time to Slide! A Day at the Park | Funny Nursery Rhymes"
       ]
     }
   },
