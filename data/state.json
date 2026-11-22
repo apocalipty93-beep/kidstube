@@ -1,7 +1,7 @@
 {
   "offset": 579252828,
-  "lastDiscover": 1795262312,
-  "qIndex": 5,
+  "lastDiscover": 1795348242,
+  "qIndex": 9,
   "seedIds": {
     "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
     "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
@@ -131,7 +131,11 @@
     "UCj2ljU8Ns7j4ph0IgknRryg": "auto_rejected",
     "UCs-i-OgJaRat1M0lCqviF2w": "auto_rejected",
     "UCwws_pC_-IeuDDaDSIo86iw": "auto_rejected",
-    "UCqq72qp3F0Jjkk5ugGsCJ_A": "auto_rejected"
+    "UCqq72qp3F0Jjkk5ugGsCJ_A": "auto_rejected",
+    "UC0fXNmjDoC7ckPyT6qM8Urw": "auto_rejected",
+    "UCRW5ynmy7XaPztlzL-miIHA": "auto_rejected",
+    "UCtgpDqkeOToveUgh8igrvXQ": "auto_rejected",
+    "UCBIG6zHtWYR310_PmtaipsQ": "auto_rejected"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -496,6 +500,90 @@
         "Walking Running and Hopping 🏃‍♂️💨 | 80 MINS Action & Movement Songs | Kids Songs & Nursery Rhymes",
         "🔴LIVE STREAM | Words & Opposites, ABC Song + More Fun Nursery Rhymes for Kids | Kunda & Friends",
         "🔴LIVE STREAM | Words & Opposites, ABC Song + More Fun Nursery Rhymes for Kids | Kunda & Friends"
+      ]
+    },
+    "UC_J_9-qRfVtKIkq7SxxVbhQ": {
+      "id": "UC_J_9-qRfVtKIkq7SxxVbhQ",
+      "title": "ТВ Деткам",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/nI6dFHL47AtjMRPyBn4TQmnS7udnKtXkzQzyEqj3qbOBDiscp_wimiBAI-KYQGDbeDslRETu4g=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 4510000,
+      "handle": "tvdetkamru",
+      "samples": [
+        "Экскаватор Капу и посудомоечная машина  #мультик #грузовичок #мультики",
+        "Грузовичок Лёва ЗИМНИЕ мультики 🔴 Добрые мультфильмы про машинки",
+        "Игрушечные машинки и спецтехника на стройке ОНЛАЙН 🔴 Большой сборник мультфильмов"
+      ]
+    },
+    "UC7zzOOhZq6Soa24gloTuczA": {
+      "id": "UC7zzOOhZq6Soa24gloTuczA",
+      "title": "Крошка Антошка TV",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/7Mofb9bH7LysidnSt264wlD9QbFbX3zvbZS_UvNTp8DcQvZ0rM3NH0psqkMoeY2nIJYdw5ZMDw4=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 1430000,
+      "handle": "kroshkaantoshkatv",
+      "samples": [
+        "Машинки с мигалками - Умные помощники: Викторина для малышей - Развивающие мультики про машинки",
+        "Угадай Машинку по Половинке! Комбайн и Трактор - Мультики про машинки - Викторина - Ищем половинки",
+        "Профессии и машинки - Кому какая машина нужна - Автомеханик | Ученый | Фермер - Мультик для детей"
+      ]
+    },
+    "UC4wDj90OgFlJETUKt6t5JYw": {
+      "id": "UC4wDj90OgFlJETUKt6t5JYw",
+      "title": "ИграШарики",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/FpmE0MQkQ2kqtTmE7tYOJwq3dbIV3yjH1Is9chRx4CbyVYeSd6D-qIU6MPAupYzfBDWQhwSqnA=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 848000,
+      "handle": "igrashariki",
+      "samples": [
+        "Весёлые Яйца-Сюрпризы 🦒 Животные и Цифры для Малышей",
+        "Learn Colors with a Rainbow Stacker 🌈 Educational Toy for Toddlers",
+        "Учим Названия Цветов с Игрушками Монтессори"
+      ]
+    },
+    "UCQjO08nk105C7Tvq-DdOBVw": {
+      "id": "UCQjO08nk105C7Tvq-DdOBVw",
+      "title": "Little Marvel Kids",
+      "lang": "en",
+      "cat": "english",
+      "thumb": "https://yt3.ggpht.com/5fLhNHtsPZ18HJB9OQfxhBn7UdR1vaQg5iPajykIa1JURiu9SuXFasuwoe-2Cn4K1zybjvsZGg=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 559000,
+      "handle": "little-marvel-kids",
+      "samples": [
+        "A Colorful Musical Adventure 🌈🎵 | ABC Phonics | Numbers 1–10 🔢 | Twinkle Twinkle ⭐ | Kids Rhymes",
+        "⭐️🎶 Baby Shark 🦈 + Fun Alphabet Phonic 🍏 Song | 5 Little Ducks going out + Rainbow in Sky 🌈",
+        "ABC Phonics Party! 🍎🔤 | 5 Little Ducks 🐥 | Twinkle Twinkle Little Star ⭐ | Numbers 1–10"
+      ]
+    },
+    "UCSkjgnd2C2bxKoE8ZFuAz9w": {
+      "id": "UCSkjgnd2C2bxKoE8ZFuAz9w",
+      "title": "Kirill and Tisha",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/VzOGhZHDS_6EvlGqcyg6sgIkqz5PDENgTxiABvRZdWfWMMKU8p3DCBC8tY7TTMlQiUO0VMoQeA=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 458000,
+      "handle": "kirillandtishatv",
+      "samples": [
+        "Учим Английский Алфавит с Тишей - Обучение для малышей",
+        "Учимся Считать от 1 до 20 | Кирилл и Тиша Находят Цифры в Песке",
+        "Учим названия фруктов и овощей | Видео для малышей"
+      ]
+    },
+    "UC1XSJZpzrWgkeRsG1JGIKkg": {
+      "id": "UC1XSJZpzrWgkeRsG1JGIKkg",
+      "title": "Развивающие видео Умачка",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_m2suyNKFs9ej0dX7xKVC2evJdf_Kpw7RcpcTZTGi8z5g=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 443000,
+      "handle": "mrumachka",
+      "samples": [
+        "Учимся считать и решать задачки на деление. Ежик Жека и Паровозик Санни. Серия 7-9.",
+        "Учимся считать - Учим сложение вычитание и умножение с Ежиком Жекой.",
+        "Карточки для малышей - Презентация \"Обитатели саванны\""
       ]
     }
   },
