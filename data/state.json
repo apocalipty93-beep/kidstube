@@ -1,7 +1,7 @@
 {
   "offset": 579252828,
-  "lastDiscover": 1795348242,
-  "qIndex": 9,
+  "lastDiscover": 1795444146,
+  "qIndex": 13,
   "seedIds": {
     "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
     "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
@@ -135,7 +135,11 @@
     "UC0fXNmjDoC7ckPyT6qM8Urw": "auto_rejected",
     "UCRW5ynmy7XaPztlzL-miIHA": "auto_rejected",
     "UCtgpDqkeOToveUgh8igrvXQ": "auto_rejected",
-    "UCBIG6zHtWYR310_PmtaipsQ": "auto_rejected"
+    "UCBIG6zHtWYR310_PmtaipsQ": "auto_rejected",
+    "UCx-aeaUXoBT8tFxYL_3Ppqw": "auto_rejected",
+    "UCvmAayiP_nn7A_QmknUiWyg": "auto_rejected",
+    "UCurbOlLW2MOV3Vsq_CsTQtQ": "auto_rejected",
+    "UCxlJ45KjG4XVcQ_hd8j227A": "auto_rejected"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -584,6 +588,90 @@
         "Учимся считать и решать задачки на деление. Ежик Жека и Паровозик Санни. Серия 7-9.",
         "Учимся считать - Учим сложение вычитание и умножение с Ежиком Жекой.",
         "Карточки для малышей - Презентация \"Обитатели саванны\""
+      ]
+    },
+    "UC12_HhJo54uqZ5m6xCjoOFA": {
+      "id": "UC12_HhJo54uqZ5m6xCjoOFA",
+      "title": "Super Kids TV",
+      "lang": "en",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_kDrbMPJFntUc5QSsUX_OxGv-l2fPlW3QTStPsTEBEerrw=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 6220000,
+      "handle": "superkidstvtoys",
+      "samples": [
+        "Colorful Shapes Spinning Wheel",
+        "Big Briefcase Full of Colorful Cars",
+        "Wooden Caterpillar Number Fun"
+      ]
+    },
+    "UCGxE9I3vpwj9973SaW72tqg": {
+      "id": "UCGxE9I3vpwj9973SaW72tqg",
+      "title": "Kids Learn and Grow - Educational Videos",
+      "lang": "en",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/1WjxNiM8a14pxbtexnB5rkH_2FmXnBCx4gmOYLhLLVck38h_0sMWTyEuTr9XCIGyLBgSEz-P=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 885000,
+      "handle": "kidslearningandgrowing",
+      "samples": [
+        "Kids Learn to Stack & Sort, Count Numbers, Colors & SHAPES! Educational Learning Video",
+        "Toddlers Learn Colors with Baby Shark   Count 1 to 10 Best Educational Toy Learning Video for Kids!",
+        "Toddlers Learn Colors Baby Shark | Count 1 to 10 Best Educational Toy Learning Spanish and English"
+      ]
+    },
+    "UCYatIHPmAyKHtRrr4PquMrg": {
+      "id": "UCYatIHPmAyKHtRrr4PquMrg",
+      "title": "The Good and the Beautiful Kids",
+      "lang": "en",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_nkDZNcvcAkRhxyDtki5vbcre2fNFVHWHx9kXDjGAqLTQ=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 283000,
+      "handle": "thegoodandthebeautifulkids",
+      "samples": [
+        "Calming Nature Music for Kids: Swiss Alps | The Good and the Beautiful",
+        "Classic Nursery Rhymes Compilation for Kids 2 (11 minutes) | The Good and the Beautiful",
+        "Five Little Speckled Frogs | Song and Lyrics | The Good and the Beautiful"
+      ]
+    },
+    "UCtJ6ylmIVLmxdycQvUQB6YQ": {
+      "id": "UCtJ6ylmIVLmxdycQvUQB6YQ",
+      "title": "Kidzen",
+      "lang": "en",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/WPa_7FnUfTg8kO71Vr3Pm3y9ppRI31sJ4HtOt8phPSe3cFTXWUoBcYN3uCCcsRzdMhxQXHkAMb0=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 189000,
+      "handle": "kidzenmusic",
+      "samples": [
+        "Autumn Piano Lullaby Collection | Golden Leaves to Starry Nights | Kidzen",
+        "Kidzen - Firefly Beetles",
+        "Top 10 Baby Sleep Music: Our Sweetest Bedtime Melodies | Kidzen"
+      ]
+    },
+    "UCj7mFI8jm6bbPhJ-o0mQMpA": {
+      "id": "UCj7mFI8jm6bbPhJ-o0mQMpA",
+      "title": "Tab Time",
+      "lang": "en",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/RDRMSrK9yMEouCPNUEV21LKSGGsIFqY-mE9F3u0BFa3-g3IYAlh1xZOjXwijtROjflT5XX7O=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 171000,
+      "handle": "itstabtime",
+      "samples": [
+        "Ms. Tab's Lab FULL Compilation (2 HOURS)! | TAB TIME",
+        "2 HOURS of FUN Crafts for Kids! | TAB TIME Full Craft Compilation (Seasons 1-3)",
+        "Special Adventure: The Magical Island | Kids Learning Videos | Saturday Morning Cartoons | Toddlers"
+      ]
+    },
+    "UChJPrsXRzcDr8c_uO5euGLw": {
+      "id": "UChJPrsXRzcDr8c_uO5euGLw",
+      "title": "Lullabies 🌛 by Nursery Rhymes 123",
+      "lang": "en",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/tV44WRKdoeWXx83hWgeZ5PXKK9IfEwvJdhhyN4sz3Wp4tnMHP3vvW2BoGtXNOmV-F0Dvo731=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 74000,
+      "handle": "lullabiesbynurseryrhymes123",
+      "samples": [
+        "🐰 Hop, Hop, Hop! Sleeping Bunnies & Hop Little Bunnies | Kids Songs | Nursery Rhymes 123",
+        "Sleeping Bunnies  (Hop Little Bunnies) | Kids Songs | Nursery Rhymes 123",
+        "Fall Asleep to Beautiful Dreamer 🌙 🧸 Calming Baby Bedtime Song 💤 Nursery Rhymes 123"
       ]
     }
   },
