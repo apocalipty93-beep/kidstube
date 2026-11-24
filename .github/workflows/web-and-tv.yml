@@ -35,6 +35,7 @@ jobs:
           test -n "$YT_WEB_KEY" || { echo "Не задан секрет YT_WEB_KEY"; exit 1; }
           sed -i "s|__YT_KEY__|$YT_WEB_KEY|g" web/config.js
           sed -i "s|__REPO__|$GITHUB_REPOSITORY|g; s|__BRANCH__|$GITHUB_REF_NAME|g" web/config.js
+          sed -i "s|__BUILD__|$GITHUB_SHA|g" web/index.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
