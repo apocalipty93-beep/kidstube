@@ -21,11 +21,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  site:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - name: Подставить ключ YouTube API
@@ -40,6 +37,15 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web
+
+  site:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - run: sleep 10
       - id: deploy
         uses: actions/deploy-pages@v4
 
