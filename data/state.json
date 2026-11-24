@@ -1,7 +1,7 @@
 {
   "offset": 579252830,
-  "lastDiscover": 1795444146,
-  "qIndex": 13,
+  "lastDiscover": 1795520426,
+  "qIndex": 2,
   "seedIds": {
     "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
     "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
@@ -139,7 +139,10 @@
     "UCx-aeaUXoBT8tFxYL_3Ppqw": "auto_rejected",
     "UCvmAayiP_nn7A_QmknUiWyg": "auto_rejected",
     "UCurbOlLW2MOV3Vsq_CsTQtQ": "auto_rejected",
-    "UCxlJ45KjG4XVcQ_hd8j227A": "auto_rejected"
+    "UCxlJ45KjG4XVcQ_hd8j227A": "auto_rejected",
+    "UCCtFIKW6LLQCwSLYDhh3nLQ": "auto_rejected",
+    "UCoP1_wpRZj-qmmVUCGz3_Aw": "auto_rejected",
+    "UCA3jE7gyTH-54d8AR_9EitQ": "auto_rejected"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -672,6 +675,90 @@
         "🐰 Hop, Hop, Hop! Sleeping Bunnies & Hop Little Bunnies | Kids Songs | Nursery Rhymes 123",
         "Sleeping Bunnies  (Hop Little Bunnies) | Kids Songs | Nursery Rhymes 123",
         "Fall Asleep to Beautiful Dreamer 🌙 🧸 Calming Baby Bedtime Song 💤 Nursery Rhymes 123"
+      ]
+    },
+    "UCDZDmXlVV8wjuRSksAoFrNQ": {
+      "id": "UCDZDmXlVV8wjuRSksAoFrNQ",
+      "title": "Приключение Игрушек",
+      "lang": "ru",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_nFr8vHLrUaYmb_H-rItDYBo-2soVkweR0_ShChZpfuDQ=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 2260000,
+      "handle": "приключениеигрушек",
+      "samples": [
+        "Вертолет преследует преступника! Где спрятано золото?! Мультики для детей",
+        "Мультики про машинки - Полиция окружила самолет но черная слизь на дороге останавливает погоню!",
+        "Бандиты воруют сейф, но в дело вступает Полицейский вертолет! Порше с мигалками устроила погоню."
+      ]
+    },
+    "UCu-m7YNTxxUcfQablPJXB1w": {
+      "id": "UCu-m7YNTxxUcfQablPJXB1w",
+      "title": "МультиВарик ТВ",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/PqLn2k1nSJ8peO4er92daLdFAP7UEK7ngQmFTPkpePACGclcE9dun5sZkqawDY5vMOk5cYnoPA=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 1290000,
+      "handle": "multivarik",
+      "samples": [
+        "ОБУЧАЮЩИЕ ПЕСЕНКИ ♫ ВЕСЁЛЫЕ ОБУЧАЛКИ ДЛЯ МАЛЫШЕЙ ♫ МУЛЬТиВАРИК ТВ 0+",
+        "МУЛЬТИНЯШКИ - МУЛЬТИОСЕНЬ ♫ КАРАОКЕ С ГОЛОСОМ ♫ МУЛЬТиВАРИК ТВ ♫ ДЕТСКИЕ ПЕСНИ В ДЕНЬ РОЖДЕНИЯ 0+",
+        "МУЛЬТИ-НЯНЯ ☺ МУЛЬТиВАРИК ТВ ♫ ПЕСЕНКИ ДЕТСКОГО САДА ♫ СБОРНИК ПЕСЕН МУЛЬТИКОВ 0+"
+      ]
+    },
+    "UCxUzgkB8yiUXNB6RTWNCrFw": {
+      "id": "UCxUzgkB8yiUXNB6RTWNCrFw",
+      "title": "Тино - Игрушки для Детей",
+      "lang": "ru",
+      "cat": "cartoons",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_lJhdjBLZiOffCaUh0egeFO5qwez2bm90N70nmG_ZyIfw=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 825000,
+      "handle": "tinotoysforkids",
+      "samples": [
+        "🎵😄 Yup Yup Nursery Rhymes – Весёлая песенка для детей | Подписывайтесь на канал Тино#длядетей",
+        "🎵😴 Are You Sleeping Brother John – Весёлая песенка для детей | Подписывайтесь на канал Тино",
+        "🛁🎵 Bath Song - Веселая Песенка для Детей😊🛁🎶#длядетей #игрушки #мультики #деревянныеигрушки #тино"
+      ]
+    },
+    "UCQX4UTsKs66OT6fmf8gbCLA": {
+      "id": "UCQX4UTsKs66OT6fmf8gbCLA",
+      "title": "BARBARIKI",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_mNAYO41yfjBwm_esbTLMN5nMK2ACXxiJJAHYmcRFEKBms=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 787000,
+      "handle": "barbariki",
+      "samples": [
+        "Барбарики - Планета Барбарики | ВЕСЕЛАЯ МУЛЬТ ПЕСЕНКА | ДЛЯ ДЕТЕЙ 0+",
+        "Барбарики - Пицца | ВЕСЕЛАЯ МУЛЬТ ПЕСЕНКА | ДЛЯ ДЕТЕЙ 0+",
+        "Барбарики - Наш Мир | ВЕСЕЛАЯ МУЛЬТ ПЕСЕНКА | ДЛЯ ДЕТЕЙ 0+"
+      ]
+    },
+    "UCf5lntL-0A3m414on-bd-cw": {
+      "id": "UCf5lntL-0A3m414on-bd-cw",
+      "title": "Добрая Пчела",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/MShzAY4_gg8eu_hH-QiatqJ0ZKubv9VQWkBaLKO1Rk4VjJ9K9Za9slMIOhLl-oQ0kxy5Adm7=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 573000,
+      "handle": "dobraya_pchela",
+      "samples": [
+        "Музыкальный пароль — отличный способ подтянуть классику!",
+        "Домашнее задание вместе с роботом. Это когда он помогает сделать, а не делает за тебя!",
+        "Сила науки — это когда можешь легко играть и познавать законы физики на себе."
+      ]
+    },
+    "UCIqa-lhrgPyZfHDIEpVXytA": {
+      "id": "UCIqa-lhrgPyZfHDIEpVXytA",
+      "title": "Happy Baby Sounds Sleep",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/8nYF99MvaWmh-mQr9bcTkwiuM84msspKZ-xsMnF03iHC8K0pGMvcKKNEdVWgRC8Je-UXYI19pg=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 321000,
+      "handle": "happybabysoundssleep",
+      "samples": [
+        "Deep Sleep Baby Music 💤 Mozart Brahms Lullaby | Soothing Bedtime Melodies for Babies to Sleep Fast",
+        "Mozart & Brahms Lullabies 🎶 Baby Sleep Music | Overcome Insomnia & Enjoy Peaceful Deep Sleep Tonight",
+        "Baby Sleep Music♥ Sleep Instantly in 3 Minutes | Mozart Brahms Lullaby for Gentle Bedtime Relaxation"
       ]
     }
   },
