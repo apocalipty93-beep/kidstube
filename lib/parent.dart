@@ -126,55 +126,117 @@ class ParentScreen extends StatelessWidget {
         .toList());
   }
 
+  Future<void> _connectFamily(BuildContext context) async {
+    final c = TextEditingController();
+    final code = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Код семьи'),
+        content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('1. Откройте в Telegram @$kBotName\n2. Нажмите Start\n3. Введите код из ответа бота'),
+          const SizedBox(height: 12),
+          TextField(
+            controller: c,
+            autofocus: true,
+            autocorrect: false,
+            textCapitalization: TextCapitalization.none,
+            decoration: const InputDecoration(hintText: 'например k7x2qa'),
+          ),
+        ]),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Отмена')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Подключить')),
+        ],
+      ),
+    );
+    if (code == null || code.trim().isEmpty) return;
+    final err = await app.checkFamily(code);
+    if (!context.mounted) return;
+    if (err != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Подключено: ${code.trim().toLowerCase()}')));
+    await app.setFamily(code);
+  }
+
+  Widget _head(BuildContext context, String text, {String? hint}) => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 20, 16, 6),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(text, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          if (hint != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(hint, style: Theme.of(context).textTheme.bodySmall),
+            ),
+        ]),
+      );
+
+  String _info(Channel c) {
+    final n = app.videos.where((v) => v.channelId == c.id).length;
+    final parts = <String>[c.lang == 'ru' ? 'русский' : 'English'];
+    if (!c.resolved) {
+      parts.add('не найден на YouTube');
+    } else if (app.videos.isNotEmpty && n == 0) {
+      parts.add('нет видео: владелец запретил встраивание');
+    } else if (n > 0) {
+      parts.add('$n видео');
+    }
+    return parts.join(' • ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: app,
       builder: (context, _) {
+        final enabledN = app.channels.where((c) => c.enabled).length;
         return Scaffold(
           appBar: AppBar(title: const Text('Для родителей')),
           body: ListView(
+            padding: const EdgeInsets.only(bottom: 32),
             children: [
-              const Padding(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
-                child: Text('Разрешённые каналы',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              _head(context, 'Семья и Telegram',
+                  hint: 'Новые каналы предлагает бот @$kBotName, вы одобряете их в Telegram. У каждой семьи свой список.'),
+              ListTile(
+                leading: const Icon(Icons.family_restroom),
+                title: Text(app.family.isEmpty ? 'Общий каталог (без кода семьи)' : 'Ваша семья: ${app.family}'),
+                subtitle: const Text('Нажмите, чтобы ввести код из Telegram'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => _connectFamily(context),
               ),
-              for (final c in app.channels)
-                SwitchListTile(
-                  title: Text(c.title),
-                  subtitle: Text(c.resolved
-                      ? '@${c.handle} • ${c.lang == 'ru' ? 'русский' : 'English'} • ${kCats[c.cat] ?? 'Мультики'}'
-                          '${app.videos.isEmpty ? '' : app.videos.any((v) => v.channelId == c.id) ? ' • ${app.videos.where((v) => v.channelId == c.id).length} видео' : ' • нет видео: канал запретил встраивание'}'
-                      : '@${c.handle} — не найден на YouTube'),
-                  value: c.enabled && c.resolved,
-                  onChanged: c.resolved
-                      ? (v) => app.setChannelEnabled(c, v)
-                      : null,
-                  secondary: c.custom || !c.resolved
-                      ? IconButton(
-                          icon: const Icon(Icons.delete_outline),
-                          onPressed: () => app.removeChannel(c),
-                        )
-                      : null,
-                ),
+              _head(context, 'Каналы: включено $enabledN из ${app.channels.length}'),
+              for (final cat in kCats.entries) ...[
+                if (app.channels.any((c) => (c.cat.isEmpty ? 'cartoons' : c.cat) == cat.key))
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                    child: Text(
+                      '${cat.value.toUpperCase()} • ${app.channels.where((c) => (c.cat.isEmpty ? 'cartoons' : c.cat) == cat.key).length}',
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                  ),
+                for (final c in app.channels.where((c) => (c.cat.isEmpty ? 'cartoons' : c.cat) == cat.key))
+                  SwitchListTile(
+                    title: Text(c.title),
+                    subtitle: Text(_info(c)),
+                    value: c.enabled && c.resolved,
+                    onChanged: c.resolved ? (v) => app.setChannelEnabled(c, v) : null,
+                    secondary: c.thumb.isNotEmpty
+                        ? CircleAvatar(backgroundImage: NetworkImage(c.thumb))
+                        : CircleAvatar(child: Text(c.title.isEmpty ? '?' : c.title[0])),
+                  ),
+              ],
               ListTile(
                 leading: const Icon(Icons.add),
-                title: const Text('Добавить канал'),
+                title: const Text('Добавить канал вручную'),
+                subtitle: const Text('Быстрее через бота: /search запрос'),
                 onTap: () => _addChannel(context),
               ),
-              const Divider(),
-              SwitchListTile(
-                title: const Text('Автоматически включать следующее видео'),
-                value: app.autoNext,
-                onChanged: app.setAutoNext,
-              ),
+              _head(context, 'Безопасность'),
               ListTile(
                 leading: const Icon(Icons.text_fields),
                 title: const Text('Свои стоп-слова'),
-                subtitle: Text(
-                    'Встроенных: ${kStopWords.length}, своих: ${app.extraWords.length}'),
+                subtitle: Text('Встроенных: ${kStopWords.length}, своих: ${app.extraWords.length}'),
                 onTap: () => _editWords(context),
               ),
               ListTile(
@@ -182,24 +244,26 @@ class ParentScreen extends StatelessWidget {
                 title: Text('Заблокированные видео: ${app.blockedVideos.length}'),
                 trailing: app.blockedVideos.isEmpty
                     ? null
-                    : TextButton(
-                        onPressed: app.clearBlocked,
-                        child: const Text('Сбросить')),
+                    : TextButton(onPressed: app.clearBlocked, child: const Text('Сбросить')),
               ),
               ListTile(
                 leading: const Icon(Icons.pin_outlined),
-                title: const Text('Сменить PIN'),
+                title: const Text('PIN родителей'),
+                subtitle: const Text('Сменить'),
                 onTap: () => changePin(context),
+              ),
+              _head(context, 'Просмотр'),
+              SwitchListTile(
+                title: const Text('Сразу включать следующее видео'),
+                value: app.autoNext,
+                onChanged: app.setAutoNext,
               ),
               ListTile(
                 leading: app.loading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2))
+                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
                     : const Icon(Icons.refresh),
-                title: const Text('Обновить ленту сейчас'),
-                subtitle: app.error == null ? null : Text(app.error!),
+                title: const Text('Обновить ленту'),
+                subtitle: Text(app.error ?? '${app.videos.length} видео в ленте'),
                 onTap: app.loading ? null : app.refresh,
               ),
             ],

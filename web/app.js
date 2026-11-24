@@ -351,56 +351,136 @@
   }
 
   /* ---------- родительский режим ---------- */
+  var newLang = 'ru';
+  var codeText = '';
+  var wordsText = null;
+
+  function sw(on, key, fn) { return foc(h('div', { class: 'sw' + (on ? ' on' : ''), role: 'switch' }, [h('i')]), key, fn); }
+  function section(title, hint) {
+    var k = [h('h2', { text: title })];
+    if (hint) { k.push(h('div', { class: 'hint', text: hint })); }
+    return k;
+  }
+  function chipRow(items, cur, keyPre, pick) {
+    var r = h('div', { class: 'chiprow' });
+    items.forEach(function (it) {
+      r.appendChild(foc(h('div', { class: 'chip' + (cur === it[0] ? ' sel' : ''), text: it[1] }), keyPre + it[0], function () { pick(it[0]); }));
+    });
+    return r;
+  }
+  function chInfo(c) {
+    var n = c.id ? S.videos.filter(function (v) { return v.channelId === c.id; }).length : 0;
+    var parts = [c.lang === 'ru' ? 'русский' : 'English'];
+    if (!c.id) { parts.push('не найден на YouTube'); }
+    else if (S.videos.length && !n) { parts.push('нет видео: владелец запретил встраивание'); }
+    else if (n) { parts.push(n + ' видео'); }
+    return parts.join(' · ');
+  }
+
   function renderParent(keepKey) {
     leavePlayer();
     view = 'parent';
     var key = keepKey || currentKey();
     clear();
     var p = h('div', { class: 'parent' });
-    p.appendChild(h('div', { class: 'head', style: 'padding-left:0' }, [h('div', { class: 'logo', text: 'Для родителей' }), h('div', { class: 'spacer' }), btn('Готово', 'done', function () { renderHome(); }, 'main')]));
+    p.appendChild(h('div', { class: 'head ph' }, [h('div', { class: 'logo', text: 'Для родителей' }), h('div', { class: 'spacer' }), btn('Готово', 'done', function () { renderHome(); }, 'main')]));
 
-    p.appendChild(h('h2', { text: 'Разрешённые каналы' }));
-    S.channels.forEach(function (c, i) {
-      var row = h('div', { class: 'row' }, [h('div', { class: 'nm' }, [c.title, h('div', { class: 'sub', text: '@' + c.handle + ' · ' + (c.lang === 'ru' ? 'русский' : 'English') + ' · ' + catName(c.cat) + (c.id ? (S.videos.length && !S.videos.some(function (v) { return v.channelId === c.id; }) ? ' · нет видео: канал запретил встраивание' : ' · ' + S.videos.filter(function (v) { return v.channelId === c.id; }).length + ' видео') : ' · не найден на YouTube') })])]);
-      if (c.id) { row.appendChild(btn(c.enabled ? 'Включён' : 'Выключен', 'tg-' + i, function () { KT.setEnabled(c, !c.enabled); renderParent('tg-' + i); }, c.enabled ? 'main' : 'off')); }
-      if (c.custom || !c.id) { row.appendChild(btn('Удалить', 'rm-' + i, function () { KT.removeChannel(c); renderParent('done'); })); }
-      p.appendChild(row);
+    // --- Семья и Telegram
+    section('Семья и Telegram', 'Новые каналы предлагает Telegram-бот, вы одобряете их там. У каждой семьи свой список каналов.').forEach(function (x) { p.appendChild(x); });
+    var bot = KT.cfg.botName || '';
+    var fam = h('div', { class: 'card2' });
+    fam.appendChild(h('div', { class: 'nm', text: S.family ? 'Ваша семья: ' + S.family : 'Общий каталог (без кода семьи)' }));
+    var ci = h('input', { type: 'text', value: codeText, placeholder: 'Код семьи из Telegram', maxlength: '12', autocapitalize: 'none', autocomplete: 'off' });
+    ci.setAttribute('data-f', '1'); ci.setAttribute('data-key', 'code');
+    ci.addEventListener('input', function () { codeText = ci.value; });
+    function connect() {
+      var v = ci.value.trim();
+      if (!v) { toast('Введите код семьи'); return; }
+      toast('Проверяю код…');
+      KT.checkFamily(v).then(function (code) {
+        codeText = '';
+        if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
+        toast('Подключено: ' + code);
+        KT.setFamily(code);
+        renderParent('codeok');
+      })['catch'](function (e) { toast(e.message); });
+    }
+    ci.addEventListener('keydown', function (e) { if (e.keyCode === 13) { connect(); } });
+    var frow = h('div', { class: 'frow' }, [ci, btn('Подключить', 'codeok', connect, 'main')]);
+    fam.appendChild(frow);
+    if (bot) {
+      fam.appendChild(h('div', { class: 'steps' }, [
+        '1. Откройте в Telegram ', h('a', { href: 'https://t.me/' + bot, target: '_blank', rel: 'noopener', text: '@' + bot }),
+        '  2. Нажмите Start  3. Бот пришлёт код, введите его выше'
+      ]));
+    }
+    p.appendChild(fam);
+
+    // --- Каналы по категориям
+    var enabledN = S.channels.filter(function (c) { return c.enabled; }).length;
+    section('Каналы: включено ' + enabledN + ' из ' + S.channels.length).forEach(function (x) { p.appendChild(x); });
+    (KT.cfg.cats || []).forEach(function (cat) {
+      var list = S.channels.filter(function (c) { return (c.cat || 'cartoons') === cat.id; });
+      if (!list.length) { return; }
+      p.appendChild(h('div', { class: 'cath', text: cat.name + ' · ' + list.length }));
+      list.forEach(function (c) {
+        var i = S.channels.indexOf(c);
+        var pic = h('div', { class: 'pic s', text: c.thumb ? '' : c.title.charAt(0) });
+        if (c.thumb) { pic.style.backgroundImage = 'url(' + c.thumb + ')'; }
+        var row = h('div', { class: 'row' + (c.enabled ? '' : ' dim') }, [pic, h('div', { class: 'nm' }, [c.title, h('div', { class: 'sub', text: chInfo(c) })])]);
+        if (c.custom || !c.id) { row.appendChild(btn('Удалить', 'rm-' + i, function () { KT.removeChannel(c); renderParent('done'); }, 'off')); }
+        if (c.id) { row.appendChild(sw(c.enabled, 'tg-' + i, function () { KT.setEnabled(c, !c.enabled); renderParent('tg-' + i); })); }
+        p.appendChild(row);
+      });
     });
 
-    p.appendChild(h('h2', { text: 'Добавить канал' }));
-    var inp = h('input', { type: 'text', id: 'newch', value: newText, placeholder: '@handle или ссылка youtube.com/@handle' });
+    // --- Добавить канал
+    section('Добавить канал', 'Вставьте @handle или ссылку youtube.com/@канал. Быстрее — через бота командой /search.').forEach(function (x) { p.appendChild(x); });
+    var inp = h('input', { type: 'text', id: 'newch', value: newText, placeholder: '@handle или ссылка на канал', autocapitalize: 'none', autocomplete: 'off' });
     inp.setAttribute('data-f', '1'); inp.setAttribute('data-key', 'newch');
-    function addCh(lang) {
+    inp.addEventListener('input', function () { newText = inp.value; });
+    function addCh() {
       var s = inp.value.trim();
       var m = /@([^\/?#\s]+)/.exec(s);
       var handle = m ? m[1] : (s.indexOf('/') === -1 ? s : '');
       if (!handle) { toast('Нужен @handle канала, например @Bluey'); return; }
       toast('Ищу канал…');
-      KT.addChannelByHandle(handle, lang, newCat).then(function (ch) {
+      KT.addChannelByHandle(handle, newLang, newCat).then(function (ch) {
         if (!ch) { toast('Канал не найден'); return; }
+        newText = '';
         toast('Добавлен: ' + ch.title);
-        KT.refresh().then(function () { renderParent('done'); });
+        KT.refresh().then(function () { renderParent('newch'); });
       })['catch'](function (e) { toast('Ошибка: ' + e.message); });
     }
-    p.appendChild(h('div', { class: 'row' }, [inp, btn('Категория: ' + catName(newCat), 'addcat', function () {
-      var l = KT.cfg.cats || [], i = 0;
-      l.forEach(function (x, n) { if (x.id === newCat) { i = n; } });
-      newCat = l[(i + 1) % l.length].id; newText = inp.value; renderParent('addcat');
-    }), btn('Русский', 'addru', function () { addCh('ru'); }), btn('English', 'adden', function () { addCh('en'); })]));
+    inp.addEventListener('keydown', function (e) { if (e.keyCode === 13) { addCh(); } });
+    var add = h('div', { class: 'card2' });
+    add.appendChild(h('div', { class: 'frow' }, [inp, btn('Добавить', 'addgo', addCh, 'main')]));
+    add.appendChild(h('div', { class: 'lbl', text: 'Категория' }));
+    add.appendChild(chipRow((KT.cfg.cats || []).map(function (x) { return [x.id, x.name]; }), newCat, 'ac-', function (v) { newCat = v; newText = inp.value; renderParent('ac-' + v); }));
+    add.appendChild(h('div', { class: 'lbl', text: 'Язык' }));
+    add.appendChild(chipRow([['ru', 'Русский'], ['en', 'English']], newLang, 'al-', function (v) { newLang = v; newText = inp.value; renderParent('al-' + v); }));
+    p.appendChild(add);
 
-    p.appendChild(h('h2', { text: 'Настройки' }));
-    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm', text: 'Автоматически включать следующее видео' }), btn(S.autoNext ? 'Да' : 'Нет', 'auto', function () { KT.setAutoNext(!S.autoNext); renderParent('auto'); }, S.autoNext ? 'main' : 'off')]));
-
-    var wi = h('input', { type: 'text', id: 'words', value: (S.extra || []).join(', '), placeholder: 'слово1, слово2' });
+    // --- Безопасность
+    section('Безопасность').forEach(function (x) { p.appendChild(x); });
+    var wi = h('input', { type: 'text', id: 'words', value: wordsText === null ? (S.extra || []).join(', ') : wordsText, placeholder: 'слово1, слово2', autocapitalize: 'none' });
     wi.setAttribute('data-f', '1'); wi.setAttribute('data-key', 'words');
-    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm' }, ['Свои стоп-слова', h('div', { class: 'sub', text: 'Встроенных: ' + (KT.words().length - (S.extra || []).length) })]), wi, btn('Сохранить', 'wsave', function () {
-      var arr = wi.value.split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(function (x) { return x; });
-      KT.setExtra(arr); toast('Сохранено'); renderParent('wsave');
-    })]));
+    wi.addEventListener('input', function () { wordsText = wi.value; });
+    p.appendChild(h('div', { class: 'card2' }, [
+      h('div', { class: 'nm', text: 'Свои стоп-слова' }),
+      h('div', { class: 'hint', text: 'Видео с этими словами в названии не показываются. Встроенных слов: ' + (KT.words().length - (S.extra || []).length) + '.' }),
+      h('div', { class: 'frow' }, [wi, btn('Сохранить', 'wsave', function () {
+        var arr = wi.value.split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(function (x) { return x; });
+        wordsText = null; KT.setExtra(arr); toast('Сохранено'); renderParent('wsave');
+      })])
+    ]));
+    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm' }, ['Заблокированные видео', h('div', { class: 'sub', text: S.blocked.length ? S.blocked.length + ' шт. Новое: кнопка «Родителям» в плеере или /video в боте' : 'нет' })]), S.blocked.length ? btn('Сбросить', 'unblock', function () { KT.clearBlocked(); renderParent('unblock'); }) : null]));
+    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm', text: 'PIN родителей' }), btn('Сменить', 'chpin', function () { pinDialog('Новый PIN (4 цифры)', function (np) { KT.setPin(np); toast('PIN изменён'); }); })]));
 
-    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm', text: 'Заблокированные видео: ' + S.blocked.length }), S.blocked.length ? btn('Сбросить', 'unblock', function () { KT.clearBlocked(); renderParent('unblock'); }) : null]));
-    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm', text: 'Сменить PIN' }), btn('Сменить', 'chpin', function () { pinDialog('Новый PIN (4 цифры)', function (np) { KT.setPin(np); toast('PIN изменён'); }); })]));
-    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm' }, ['Обновить ленту сейчас', KT.st.error ? h('div', { class: 'sub', text: KT.st.error }) : null]), btn(KT.st.loading ? 'Загрузка…' : 'Обновить', 'rf', function () { KT.refresh(); })]));
+    // --- Просмотр и лента
+    section('Просмотр').forEach(function (x) { p.appendChild(x); });
+    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm', text: 'Сразу включать следующее видео' }), sw(S.autoNext, 'auto', function () { KT.setAutoNext(!S.autoNext); renderParent('auto'); })]));
+    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm' }, ['Обновить ленту', h('div', { class: 'sub', text: KT.st.error ? KT.st.error : (S.videos.length + ' видео в ленте') })]), btn(KT.st.loading ? 'Загрузка…' : 'Обновить', 'rf', function () { KT.refresh(); })]));
     root.appendChild(p);
     focusKey(key || 'done');
   }
@@ -482,7 +562,11 @@
   KT.onChange(function () {
     if (modal) { return; }
     if (view === 'home') { renderHome(); }
-    else if (view === 'parent') { renderParent(); }
+    else if (view === 'parent') {
+      var ae = document.activeElement;
+      if (ae && ae.tagName === 'INPUT') { return; } // не стираем то, что родитель печатает
+      renderParent();
+    }
   });
   renderHome();
   KT.init();

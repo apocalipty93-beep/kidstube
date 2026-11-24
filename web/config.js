@@ -2,6 +2,7 @@
 // адрес каталога — тоже (репозиторий и ветка).
 var KT_CONFIG = {
   "apiKey": "__YT_KEY__",
+  "botName": "MiranaAppbot",
   "catalogUrl": "https://raw.githubusercontent.com/__REPO__/__BRANCH__/data/catalog.json",
   "cats": [
     {

@@ -12,6 +12,7 @@ class AppState extends ChangeNotifier {
   List<Video> videos = [];
   Set<String> blockedVideos = {};
   Set<String> seedsSeen = {};
+  String family = ''; // код семьи из Telegram-бота ('' = общий каталог)
   List<String> catStop = []; // стоп-слова из Telegram-бота
   Set<String> catBlocked = {}; // видео, заблокированные через бота
   List<String> watched = []; // недавно просмотренные (уходят в конец ленты)
@@ -97,6 +98,7 @@ class AppState extends ChangeNotifier {
     catStop = _p.getStringList('catStop') ?? [];
     catBlocked = (_p.getStringList('catBlocked') ?? []).toSet();
     watched = _p.getStringList('watched') ?? [];
+    family = _p.getString('family') ?? '';
     try {
       final ch = _p.getString('channels');
       if (ch != null) {
@@ -152,12 +154,56 @@ class AppState extends ChangeNotifier {
   }
 
   // Каталог от Telegram-бота: одобренные каналы добавляются, заблокированные убираются.
+  String catalogUrlFor(String code) {
+    if (kCatalogUrl.isEmpty) return '';
+    if (code.isEmpty || code == 'main') return kCatalogUrl;
+    return kCatalogUrl.replaceFirst(RegExp(r'data/catalog\.json$'), 'data/families/$code/catalog.json');
+  }
+
+  /// Проверяет, что семья с таким кодом существует. Возвращает текст ошибки или null.
+  Future<String?> checkFamily(String raw) async {
+    final code = raw.trim().toLowerCase();
+    if (code != 'main' && !RegExp(r'^[a-z0-9]{4,12}$').hasMatch(code)) {
+      return 'Код — это 6 букв и цифр из Telegram';
+    }
+    final u = catalogUrlFor(code);
+    if (u.isEmpty) return 'Каталог не настроен';
+    try {
+      final r = await http
+          .get(Uri.parse('$u?t=${DateTime.now().millisecondsSinceEpoch}'))
+          .timeout(const Duration(seconds: 20));
+      if (r.statusCode == 200) return null;
+    } catch (_) {}
+    return 'Такого кода нет. Напишите боту /start и возьмите код из ответа';
+  }
+
+  /// Переключает на каталог другой семьи: прежние каналы из каталога убираем, стартовые остаются.
+  Future<void> setFamily(String raw) async {
+    final code = raw.trim().toLowerCase();
+    family = code == 'main' ? '' : code;
+    final seedHandles = kSeeds.map((s) => s.handle.toLowerCase()).toSet();
+    channels.removeWhere((c) => !(c.custom || (!c.fromCat && seedHandles.contains(c.handle.toLowerCase()))));
+    for (final c in channels) {
+      if (!c.custom) c.enabled = true;
+    }
+    catStop = [];
+    catBlocked = {};
+    videos = [];
+    lastRefresh = null;
+    await _p.setString('family', family);
+    await _save();
+    notifyListeners();
+    await syncCatalog();
+    await refresh();
+  }
+
   Future<bool> syncCatalog() async {
-    if (kCatalogUrl.isEmpty) return false;
+    final catUrl = catalogUrlFor(family);
+    if (catUrl.isEmpty) return false;
     try {
       final stamp = DateTime.now().millisecondsSinceEpoch ~/ 300000;
       final r = await http
-          .get(Uri.parse('$kCatalogUrl?t=$stamp'))
+          .get(Uri.parse('$catUrl?t=$stamp'))
           .timeout(const Duration(seconds: 20));
       if (r.statusCode != 200) return false;
       final body = jsonDecode(utf8.decode(r.bodyBytes)) as Map<String, dynamic>;
@@ -221,6 +267,7 @@ class AppState extends ChangeNotifier {
           uploads: 'UU${id.substring(2)}',
           thumb: (e['thumb'] as String?) ?? '',
           enabled: e['enabled'] != false,
+          fromCat: true,
         ));
         changed = true;
       }

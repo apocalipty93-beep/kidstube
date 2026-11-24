@@ -3,6 +3,7 @@ const String kApiKey = String.fromEnvironment('YT_API_KEY');
 
 // Адрес каталога, который наполняет Telegram-бот (подставляется при сборке).
 const String kCatalogUrl = String.fromEnvironment('CATALOG_URL');
+const String kBotName = 'MiranaAppbot';
 
 // Категории: id -> название.
 const Map<String, String> kCats = {

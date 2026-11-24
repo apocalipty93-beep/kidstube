@@ -5,10 +5,12 @@
 Секреты (переменные окружения): TG_BOT_TOKEN, TG_CHAT_ID (можно несколько через запятую), YT_KEY.
 Результат: data/catalog.json (одобренные каналы с категориями) и data/state.json (служебное).
 """
+import hashlib
 import html
 import json
 import os
 import re
+import secrets
 import subprocess
 import sys
 import time
@@ -26,6 +28,15 @@ TOKEN = os.environ.get('TG_BOT_TOKEN', '')
 CHATS = [c.strip() for c in os.environ.get('TG_CHAT_ID', '').split(',') if c.strip()]
 YT_KEY = os.environ.get('YT_KEY', '')
 LISTEN_SECONDS = int(os.environ.get('LISTEN_SECONDS', '240'))
+FAM_PATH = os.path.join(ROOT, 'data', 'families.json')
+FAM_DIR = os.path.join(ROOT, 'data', 'families')
+MAX_FAMILIES = 30            # защита квоты YouTube: больше семей бот не принимает
+FAM_SEARCH_DAILY = 8         # /search в день на одну чужую семью (владелец: 40)
+GLOBAL_SEARCH_DAILY = 60     # /search в день на всех чужих вместе (100 ед. квоты каждый)
+SALT = os.environ.get('FAMILY_SALT', 'kidstube-v1')
+CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789'
+# Контекст текущего обновления: кому слать карточки, чья семья, лимиты
+CTX = {'chats': None, 'code': 'main', 'owner': True, 'limit': 40}
 DISCOVER_EVERY = 20 * 3600
 QUERIES_PER_RUN = 4
 MAX_NEW_PER_RUN = 6
@@ -163,7 +174,7 @@ def channel_by_handle(handle):
 
 # ---------------------------------------------------------------- Telegram: карточки и ответы
 def send_all(text, **kw):
-    for c in CHATS:
+    for c in (CTX['chats'] or CHATS):
         tg_safe('sendMessage', chat_id=c, text=text, parse_mode='HTML', disable_web_page_preview=True, **kw)
 
 
@@ -188,7 +199,7 @@ def card_text(p):
 
 
 def send_card(p):
-    for c in CHATS:
+    for c in (CTX['chats'] or CHATS):
         kb = keyboard(p['id'], p['cat'])
         r = None
         if p.get('thumb'):
@@ -474,7 +485,16 @@ HELP = ('Команды:\n'
         '/add @handle [мультики|английский|обучение|музыка] — добавить канал сразу\n'
         '/block @handle — убрать канал и больше не показывать\n'
         '/list — что сейчас разрешено\n'
+        '/code — код вашей семьи для приложения\n'
         'Новые каналы приходят карточками с кнопками, нажмите ✅ или ❌.')
+def CODE_LINE():
+    code = CTX['code']
+    if code == 'main':
+        return '🔑 Ваш код семьи: main (приложения без кода тоже показывают ваш каталог).'
+    return ('🔑 Код вашей семьи: %s\nВведите его в приложении: Родителям → Семья и код. '
+            'Каналы, которые вы одобрите здесь, появятся только у вас.' % code)
+
+
 CAT_WORDS = {'мультики': 'cartoons', 'мульт': 'cartoons', 'английский': 'english', 'англ': 'english',
              'обучение': 'learn', 'обучалки': 'learn', 'музыка': 'music', 'песни': 'music'}
 
@@ -484,9 +504,11 @@ def handle_text(state, catalog, cfg, chat, text):
     text = (text or '').strip()
     cmd = text.split()[0].split('@')[0].lower() if text else ''
     args = text.split()[1:]
-    if cmd in ('/start', '/help'):
-        return (HELP, False, False)
+    if cmd in ('/start', '/help', '/code'):
+        return ((CODE_LINE() if cmd == '/code' else HELP + '\n\n' + CODE_LINE()), False, False)
     if cmd == '/find':
+        if not CTX['owner']:
+            return ('Автоматический поиск работает только у владельца бота. Ищите так: /search мультики про машинки', False, False)
         return ('Ищу новые каналы…', False, True)
     if cmd == '/search':
         q = ' '.join(args).strip()
@@ -495,8 +517,8 @@ def handle_text(state, catalog, cfg, chat, text):
         today = time.strftime('%Y-%m-%d', time.gmtime())
         if state.get('searchDay') != today:
             state['searchDay'], state['searchCount'] = today, 0
-        if state['searchCount'] >= 40:
-            return ('Лимит поисков на сегодня (40) исчерпан, он обновится завтра.', False, False)
+        if state['searchCount'] >= CTX['limit']:
+            return ('Лимит поисков на сегодня (%d) исчерпан, он обновится завтра.' % CTX['limit'], False, False)
         state['searchCount'] += 1
         lang = 'ru' if re.search('[а-яё]', q.lower()) else 'en'
         cands = collect_candidates([(q, lang, guess_cat(q), False)], state, catalog, cfg)
@@ -596,7 +618,7 @@ def handle_text(state, catalog, cfg, chat, text):
         state['pending'].pop(ch['id'], None)
         state['seen'][ch['id']] = 'approved'
         return ('✅ %s добавлен: %s' % (ch['title'], CATS[cat]), True, False)
-    return (HELP, False, False)
+    return (HELP + '\n\n' + CODE_LINE(), False, False)
 
 
 def handle_update(state, catalog, cfg, u):
@@ -604,9 +626,6 @@ def handle_update(state, catalog, cfg, u):
     changed, want = False, False
     if 'callback_query' in u:
         cq = u['callback_query']
-        chat = str((cq.get('message') or {}).get('chat', {}).get('id', ''))
-        if chat not in CHATS:
-            return (False, False)
         parts = (cq.get('data') or '').split(':')
         if parts[0] == 'a' and len(parts) == 3:
             res, changed = decide(state, catalog, parts[2], 'a', parts[1])
@@ -636,11 +655,118 @@ def handle_update(state, catalog, cfg, u):
                     text=(msg.get('text') or '') + '\n\n' + res, reply_markup={'inline_keyboard': []})
         return (changed, False)
     m = u.get('message')
-    if m and str(m.get('chat', {}).get('id', '')) in CHATS:
+    if m and m.get('chat', {}).get('id') is not None:
         res, changed, want = handle_text(state, catalog, cfg, m['chat']['id'], m.get('text', ''))
         if res:
             tg_safe('sendMessage', chat_id=m['chat']['id'], text=res)
     return (changed, want)
+
+
+# ---------------------------------------------------------------- семьи (у каждого родителя свой каталог)
+def chat_key(chat):
+    return hashlib.sha256((SALT + ':' + str(chat)).encode()).hexdigest()[:20]
+
+
+def fam_paths(code):
+    if code == 'main':
+        return CATALOG_PATH, STATE_PATH
+    d = os.path.join(FAM_DIR, code)
+    return os.path.join(d, 'catalog.json'), os.path.join(d, 'state.json')
+
+
+def new_state(seed_ids=None):
+    return {'offset': 0, 'lastDiscover': 0, 'qIndex': 0, 'seedIds': dict(seed_ids or {}), 'missingReported': [],
+            'seen': {}, 'pending': {}}
+
+
+def new_catalog():
+    return {'updated': now_iso(), 'channels': [], 'stopWords': [], 'blockedVideos': []}
+
+
+def chat_of(u):
+    if 'callback_query' in u:
+        m = u['callback_query'].get('message') or {}
+    else:
+        m = u.get('message') or {}
+    c = m.get('chat') or {}
+    if c.get('type', 'private') != 'private':
+        return None
+    return c.get('id')
+
+
+def family_of(chat, fams):
+    if str(chat) in CHATS:
+        return 'main'
+    return fams['chats'].get(chat_key(chat))
+
+
+def create_family(chat, fams, main_state):
+    if len(fams['families']) >= MAX_FAMILIES:
+        return None
+    code = ''.join(secrets.choice(CODE_ALPHABET) for _ in range(6))
+    while code in fams['families'] or code == 'main':
+        code = ''.join(secrets.choice(CODE_ALPHABET) for _ in range(6))
+    fams['families'][code] = {'created': now_iso()}
+    fams['chats'][chat_key(chat)] = code
+    os.makedirs(os.path.join(FAM_DIR, code), exist_ok=True)
+    cp, sp = fam_paths(code)
+    save_json(cp, new_catalog())
+    save_json(sp, new_state(main_state.get('seedIds')))
+    return code
+
+
+def load_family(code, cache, main_state, main_catalog):
+    if code == 'main':
+        return main_state, main_catalog
+    if code not in cache:
+        cp, sp = fam_paths(code)
+        st = load_json(sp, None) or new_state(main_state.get('seedIds'))
+        for k, v in new_state().items():
+            st.setdefault(k, v)
+        cat = load_json(cp, None) or new_catalog()
+        cat.setdefault('stopWords', [])
+        cat.setdefault('blockedVideos', [])
+        cache[code] = (st, cat)
+    return cache[code]
+
+
+def route_update(u, cfg, fams, cache, main_state, main_catalog, touched):
+    """Находит семью по чату, ведёт обработку в её каталоге. Возвращает (код семьи, изменился каталог, нужен поиск)."""
+    chat = chat_of(u)
+    if chat is None:
+        return (None, False, False)
+    code = family_of(chat, fams)
+    if code is None:
+        if 'message' not in u:
+            return (None, False, False)
+        code = create_family(chat, fams, main_state)
+        if code is None:
+            tg_safe('sendMessage', chat_id=chat, text='Сейчас бот принимает не больше %d семей и места нет. Попробуйте позже.' % MAX_FAMILIES)
+            return (None, False, False)
+        touched.add('registry')
+        tg_safe('sendMessage', chat_id=chat, text='👋 Добро пожаловать! Здесь вы выбираете детские каналы для приложения «Мультики».\n\n'
+                '🔑 Код вашей семьи: %s\nВведите его в приложении: Родителям → Семья и Telegram. '
+                'Каналы, которые вы одобрите здесь, появятся только у вас.\n\nКоманды: /help' % code)
+    st, cat = load_family(code, cache, main_state, main_catalog)
+    owner = code == 'main'
+    text = ((u.get('message') or {}).get('text') or '')
+    if not owner and text.split()[:1] and text.split()[0].split('@')[0].lower() == '/search':
+        day = time.strftime('%Y-%m-%d', time.gmtime())
+        g = fams.setdefault('searches', {'day': day, 'n': 0})
+        if g['day'] != day:
+            g['day'], g['n'] = day, 0
+        if g['n'] >= GLOBAL_SEARCH_DAILY:
+            tg_safe('sendMessage', chat_id=chat, text='Общий лимит поисков на сегодня исчерпан, попробуйте завтра.')
+            return (code, False, False)
+        g['n'] += 1
+        touched.add('registry')
+    CTX.update(chats=[str(chat)], code=code, owner=owner, limit=40 if owner else FAM_SEARCH_DAILY)
+    try:
+        ch, w = handle_update(st, cat, cfg, u)
+    finally:
+        CTX.update(chats=None, code='main', owner=True, limit=40)
+    touched.add(code)
+    return (code, ch, w and owner)
 
 
 # ---------------------------------------------------------------- git
@@ -685,6 +811,10 @@ def main():
         {'command': 'stop', 'description': 'Стоп-слово: /stop слово'},
         {'command': 'status', 'description': 'Сводка'},
     ])
+    fams = load_json(FAM_PATH, {})
+    fams.setdefault('families', {})
+    fams.setdefault('chats', {})
+    cache = {}
     want = time.time() - state['lastDiscover'] > DISCOVER_EVERY
     deadline = time.time() + LISTEN_SECONDS
     offset = state['offset'] or None
@@ -711,23 +841,33 @@ def main():
             log('getUpdates error', str(e).replace(TOKEN, '***'))
             time.sleep(5)
             continue
-        changed_any = False
+        changed = set()
+        touched = set()
         for u in updates:
             offset = u['update_id'] + 1
             try:
-                ch, w = handle_update(state, catalog, cfg, u)
+                code, ch, w = route_update(u, cfg, fams, cache, state, catalog, touched)
             except Exception as e:  # noqa: BLE001
                 log('update error', str(e).replace(TOKEN, '***'))
                 continue
-            changed_any = changed_any or ch
+            if ch and code:
+                changed.add(code)
             want = want or w
             dirty = True
         if updates:
             state['offset'] = offset or 0
-            if changed_any:
-                catalog['updated'] = now_iso()
-                save_json(CATALOG_PATH, catalog)
-            save_json(STATE_PATH, state)
+            for code in touched:
+                if code in ('registry',):
+                    continue
+                st, cat = load_family(code, cache, state, catalog)
+                if code in changed:
+                    cat['updated'] = now_iso()
+                cp, sp = fam_paths(code)
+                if code in changed:
+                    save_json(cp, cat)
+                save_json(sp, st)
+            if 'registry' in touched:
+                save_json(FAM_PATH, fams)
             publish()
     if offset:
         tg_safe('getUpdates', offset=offset, timeout=0)

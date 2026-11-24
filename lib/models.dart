@@ -8,6 +8,7 @@ class Channel {
   String thumb;
   bool enabled;
   bool custom;
+  bool fromCat;
 
   Channel({
     required this.id,
@@ -19,6 +20,7 @@ class Channel {
     this.thumb = '',
     this.enabled = true,
     this.custom = false,
+    this.fromCat = false,
   });
 
   bool get resolved => id.isNotEmpty;
@@ -33,6 +35,7 @@ class Channel {
         'thumb': thumb,
         'enabled': enabled,
         'custom': custom,
+        'fromCat': fromCat,
       };
 
   factory Channel.fromJson(Map<String, dynamic> j) => Channel(
@@ -45,6 +48,7 @@ class Channel {
         thumb: (j['thumb'] as String?) ?? '',
         enabled: (j['enabled'] as bool?) ?? true,
         custom: (j['custom'] as bool?) ?? false,
+        fromCat: (j['fromCat'] as bool?) ?? false,
       );
 }
 

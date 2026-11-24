@@ -5,7 +5,7 @@ var KT = (function () {
   var STORE = 'kt_state_v1';
   var DAY6 = 6 * 3600 * 1000;
 
-  var S = { channels: [], videos: [], blocked: [], extra: [], pin: '', autoNext: true, last: 0, seedsSeen: [], catStop: [], catBlocked: [], watched: [] };
+  var S = { channels: [], videos: [], blocked: [], extra: [], pin: '', autoNext: true, last: 0, seedsSeen: [], catStop: [], catBlocked: [], watched: [], family: '' };
   var st = { loading: false, error: null };
   var listeners = [];
 
@@ -31,7 +31,34 @@ var KT = (function () {
     });
     S.channels.forEach(function (c) { if (!c.cat) { c.cat = catOfSeed(c.handle) || 'cartoons'; } });
   }
-  function catalogUrl() { var u = CFG.catalogUrl; return (u && u.indexOf('__') === -1) ? u : ''; }
+  function catalogUrl(code) {
+    var u = CFG.catalogUrl;
+    if (!u || u.indexOf('__') !== -1) { return ''; }
+    code = (code === undefined) ? S.family : code;
+    if (code && code !== 'main') { u = u.replace(/data\/catalog\.json$/, 'data/families/' + code + '/catalog.json'); }
+    return u;
+  }
+  function validCode(code) { return /^[a-z0-9]{4,12}$/.test(code || ''); }
+  // Проверяем, что семья с таким кодом существует (бот создал для неё каталог).
+  function checkFamily(code) {
+    code = String(code || '').trim().toLowerCase();
+    if (code !== 'main' && !validCode(code)) { return Promise.reject(new Error('Код — это 6 букв и цифр из Telegram')); }
+    var u = catalogUrl(code);
+    if (!u) { return Promise.reject(new Error('Каталог не настроен')); }
+    return net.http(u + '?t=' + Date.now()).then(function () { return code; }, function () { throw new Error('Такого кода нет. Напишите боту /start и возьмите код из ответа'); });
+  }
+  // Переключение на каталог другой семьи: прежние каналы из каталога убираем, стартовые остаются.
+  function setFamily(code) {
+    code = String(code || '').trim().toLowerCase();
+    S.family = (code === 'main') ? '' : code;
+    var seedHandles = {};
+    (CFG.seeds || []).forEach(function (s) { seedHandles[String(s.handle).toLowerCase()] = true; });
+    S.channels = S.channels.filter(function (c) { return c.custom || (!c.fromCat && seedHandles[String(c.handle).toLowerCase()]); });
+    S.channels.forEach(function (c) { if (!c.custom) { c.enabled = true; } });
+    S.catStop = []; S.catBlocked = []; S.videos = []; S.last = 0;
+    save(); emit();
+    return syncCatalog().then(function () { return refresh(); });
+  }
   // Каталог, который наполняет Telegram-бот (одобренные/заблокированные каналы).
   function syncCatalog() {
     var u = catalogUrl();
@@ -59,7 +86,7 @@ var KT = (function () {
           if (typeof e.enabled === 'boolean' && ex.enabled !== e.enabled) { ex.enabled = e.enabled; changed = true; }
           return;
         }
-        S.channels.push({ id: e.id, title: e.title || e.handle || e.id, handle: e.handle || '', lang: e.lang || 'ru', cat: e.cat || 'cartoons', uploads: 'UU' + e.id.substring(2), thumb: e.thumb || '', enabled: e.enabled !== false, custom: false });
+        S.channels.push({ id: e.id, title: e.title || e.handle || e.id, handle: e.handle || '', lang: e.lang || 'ru', cat: e.cat || 'cartoons', uploads: 'UU' + e.id.substring(2), thumb: e.thumb || '', enabled: e.enabled !== false, custom: false, fromCat: true });
         changed = true;
       });
       var sw = (j && j.stopWords) || [], bv = (j && j.blockedVideos) || [];
@@ -368,7 +395,7 @@ var KT = (function () {
   function setAutoNext(v) { S.autoNext = !!v; save(); emit(); }
 
   return {
-    S: S, st: st, cfg: CFG, markWatched: markWatched, init: init, syncCatalog: syncCatalog, refresh: refresh, visible: visible, onChange: onChange, words: words,
+    S: S, st: st, cfg: CFG, markWatched: markWatched, init: init, syncCatalog: syncCatalog, setFamily: setFamily, checkFamily: checkFamily, refresh: refresh, visible: visible, onChange: onChange, words: words,
     setEnabled: setEnabled, removeChannel: removeChannel, addChannelByHandle: addChannelByHandle,
     blockVideo: blockVideo, clearBlocked: clearBlocked, setExtra: setExtra, setPin: setPin, setAutoNext: setAutoNext,
     isBlockedText: isBlockedText, parseDuration: parseDuration, fmtDur: fmtDur, _net: net

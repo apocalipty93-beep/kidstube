@@ -74,3 +74,32 @@ body { margin: 0; background: #FFF8F0; color: #3b2a20; font-family: Roboto, Aria
 @media (max-width: 560px) { .card { width: calc(100% - 1.2rem); } }
 .search { width: 14rem; max-width: 40vw; padding: .5rem 1rem; border-radius: 1.4rem; border: .12rem solid #FFD2BF; background: #fff; font-size: 1.05rem; font-family: inherit; margin-left: .6rem; outline: none; }
 .search:focus { border-color: #FF7043; }
+
+/* панель родителей */
+.ph { padding-left: 0; }
+.hint { font-size: .95rem; opacity: .7; margin: -.2rem 0 .6rem; line-height: 1.35; }
+.cath { font-size: .95rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05rem; opacity: .6; margin: .9rem .3rem .4rem; }
+.card2 { background: #fff; border-radius: 1rem; padding: .8rem .9rem; margin-bottom: .5rem; }
+.card2 .nm { font-size: 1.1rem; font-weight: 700; margin-bottom: .4rem; }
+.frow { display: flex; align-items: center; flex-wrap: wrap; }
+.frow input { flex: 1; min-width: 12rem; }
+.frow .btn { margin: .3rem 0 .3rem .6rem; }
+.lbl { font-size: .9rem; font-weight: 700; opacity: .65; margin: .7rem 0 .3rem .2rem; }
+.chiprow .chip { margin-bottom: .3rem; }
+.steps { font-size: .95rem; opacity: .8; margin-top: .6rem; line-height: 1.5; }
+.steps a { color: #c2410c; font-weight: 700; }
+.row.dim .nm, .row.dim .pic { opacity: .45; }
+.pic.s { width: 2.8rem; height: 2.8rem; min-width: 2.8rem; margin-right: .8rem; border-radius: 50%; background: #FFD2BF center/cover no-repeat; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #7a2e12; }
+.sw { width: 3.4rem; height: 1.9rem; border-radius: 1rem; background: #d9d1ca; position: relative; margin-left: .8rem; flex: none; transition: background .15s; }
+.sw i { position: absolute; left: .2rem; top: .2rem; width: 1.5rem; height: 1.5rem; border-radius: 50%; background: #fff; transition: left .15s; box-shadow: 0 .05rem .2rem rgba(0,0,0,.3); }
+.sw.on { background: #FF7043; }
+.sw.on i { left: 1.7rem; }
+@media (max-width: 700px) {
+  .head { flex-wrap: wrap; }
+  .head .search { order: 5; width: 100%; max-width: 100%; margin: .5rem 0 0; }
+  .logo { font-size: 1.4rem; }
+  .parent { padding: .6rem .8rem 3rem; }
+  .parent input { width: 100%; }
+  .row { flex-wrap: wrap; }
+}
+@media (max-width: 700px) { .chips { white-space: nowrap; overflow-x: auto; } .chips::-webkit-scrollbar { display: none; } }
