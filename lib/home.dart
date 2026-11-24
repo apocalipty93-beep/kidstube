@@ -26,7 +26,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Video> _apply(List<Video> all) {
     var l = all;
-    if (_filter == 'ru' || _filter == 'en') {
+    if (_filter == 'fav') {
+      l = l.where((v) => app.favs.contains(v.id)).toList();
+    } else if (_filter == 'ru' || _filter == 'en') {
       l = l.where((v) => v.lang == _filter).toList();
     } else if (_filter.startsWith('cat:')) {
       final cid = _filter.substring(4);
@@ -63,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(40),
         onTap: () => setState(() => _filter = sel ? 'all' : 'ch:${c.id}'),
         child: SizedBox(
-          width: 76,
+          width: 88,
           child: Column(
             children: [
               Container(
@@ -74,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: sel ? cs.primary : Colors.transparent, width: 3),
                 ),
                 child: CircleAvatar(
-                  radius: 27,
+                  radius: 32,
                   backgroundColor: cs.primaryContainer,
                   backgroundImage:
                       c.thumb.isNotEmpty ? NetworkImage(c.thumb) : null,
@@ -90,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: sel ? FontWeight.bold : FontWeight.normal),
               ),
             ],
@@ -100,11 +102,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  static const Map<String, String> _catIcon = {
+    'cartoons': '🎬',
+    'english': '🔤',
+    'learn': '🧠',
+    'music': '🎵',
+  };
+
   Widget _chip(String key, String label) {
     return Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ChoiceChip(
-        label: Text(label),
+        label: Text(label, style: const TextStyle(fontSize: 16)),
         selected: _filter == key,
         onSelected: (_) => setState(() => _filter = key),
       ),
@@ -130,7 +139,9 @@ class _HomeScreenState extends State<HomeScreen> {
         final hasVid = {for (final v in all) v.channelId};
         final chs = app.channels
             .where((c) => c.enabled && c.resolved && hasVid.contains(c.id));
-        return Scaffold(
+        return PopScope(
+          canPop: false, // ребёнок не выходит из приложения кнопкой «назад»
+          child: Scaffold(
           appBar: AppBar(
             backgroundColor: const Color(0xFFFFF8F0),
             title: _searching
@@ -174,16 +185,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   children: [
-                    _chip('all', 'Все'),
-                    _chip('ru', 'Русские'),
-                    _chip('en', 'English'),
+                    _chip('all', '🏠 Все'),
+                    if (app.favs.isNotEmpty) _chip('fav', '❤️ Любимое'),
                     for (final e in kCats.entries)
-                      if (present.contains(e.key)) _chip('cat:${e.key}', e.value),
+                      if (present.contains(e.key))
+                        _chip('cat:${e.key}', '${_catIcon[e.key] ?? '🎬'} ${e.value}'),
                   ],
                 ),
               ),
               SizedBox(
-                height: 104,
+                height: 116,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -193,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Expanded(child: _body(list, all.isEmpty)),
             ],
           ),
-        );
+        ));
       },
     );
   }

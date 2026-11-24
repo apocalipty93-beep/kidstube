@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +19,18 @@ class AppState extends ChangeNotifier {
   List<String> watched = []; // недавно просмотренные (уходят в конец ленты)
   final String _seed = DateTime.now().microsecondsSinceEpoch.toString();
   List<String> extraWords = [];
+  // Время просмотра, сон, любимое
+  int limit = 0; // минут в день, 0 = без лимита
+  String bed = ''; // 'HH:MM' — с этого времени до 07:00 приложение закрыто
+  String childName = '';
+  Set<String> favs = {};
+  int extraUntil = 0; // миллисекунды: родитель продлил просмотр до этого момента
+  int? catLimit; // значения из Telegram-бота главнее локальных
+  String catBed = '';
+  String catName = '';
+  String usageDay = '';
+  int usageSec = 0;
+  Map<String, int> usageBy = {};
   String pin = '';
   bool autoNext = true;
   bool loading = false;
@@ -79,13 +92,140 @@ class AppState extends ChangeNotifier {
   List<Video> get visible {
     final on = channels.where((c) => c.enabled).map((c) => c.id).toSet();
     final w = words;
-    return _mix(videos
+    final mixed = _mix(videos
         .where((v) =>
             on.contains(v.channelId) &&
             !blockedVideos.contains(v.id) &&
             !catBlocked.contains(v.id) &&
             !isBlockedText(v.title, w))
         .toList());
+    if (favs.isEmpty) return mixed;
+    return [
+      ...mixed.where((v) => favs.contains(v.id)),
+      ...mixed.where((v) => !favs.contains(v.id)),
+    ];
+  }
+
+  // ---------- время просмотра, сон, любимое ----------
+  String _dayKey([DateTime? d]) {
+    final t = d ?? DateTime.now();
+    return '${t.year}-${t.month}-${t.day}';
+  }
+
+  void _rollUsage() {
+    if (usageDay != _dayKey()) {
+      usageDay = _dayKey();
+      usageSec = 0;
+      usageBy = {};
+    }
+  }
+
+  int get usedSeconds {
+    _rollUsage();
+    return usageSec;
+  }
+
+  int _tickN = 0;
+  void addWatch(int sec, String chId) {
+    _rollUsage();
+    usageSec += sec;
+    if (chId.isNotEmpty) usageBy[chId] = (usageBy[chId] ?? 0) + sec;
+    _tickN++;
+    if (_tickN % 10 == 0) _saveTime();
+  }
+
+  int get effLimit => catLimit ?? limit;
+  String get effBed => catBed.isNotEmpty ? catBed : bed;
+  String get effName => catName.isNotEmpty ? catName : childName;
+
+  int _parseHm(String s) {
+    final m = RegExp(r'^(\d{1,2}):(\d{2})$').firstMatch(s);
+    if (m == null) return -1;
+    return int.parse(m.group(1)!) * 60 + int.parse(m.group(2)!);
+  }
+
+  /// null — можно смотреть; 'limit' — лимит на день исчерпан; 'bed' — время сна.
+  String? lockReason([DateTime? now]) {
+    final d = now ?? DateTime.now();
+    if (extraUntil > d.millisecondsSinceEpoch) return null;
+    final lim = effLimit;
+    if (lim > 0 && usedSeconds >= lim * 60) return 'limit';
+    final b = _parseHm(effBed);
+    if (b > 7 * 60) {
+      final m = d.hour * 60 + d.minute;
+      if (m >= b || m < 7 * 60) return 'bed';
+    }
+    return null;
+  }
+
+  Future<void> extend(int minutes) async {
+    extraUntil = DateTime.now().millisecondsSinceEpoch + minutes * 60000;
+    await _saveTime();
+    notifyListeners();
+  }
+
+  Future<void> setLimit(int n) async {
+    limit = n;
+    extraUntil = 0;
+    await _saveTime();
+    notifyListeners();
+  }
+
+  Future<void> setBed(String s) async {
+    bed = s;
+    extraUntil = 0;
+    await _saveTime();
+    notifyListeners();
+  }
+
+  Future<void> setChildName(String s) async {
+    childName = s;
+    await _saveTime();
+    notifyListeners();
+  }
+
+  bool isFav(String id) => favs.contains(id);
+
+  Future<bool> toggleFav(String id) async {
+    final on = !favs.contains(id);
+    if (on) {
+      favs.add(id);
+    } else {
+      favs.remove(id);
+    }
+    await _saveTime();
+    notifyListeners();
+    return on;
+  }
+
+  Future<void> _saveTime() async {
+    await _p.setInt('limit', limit);
+    await _p.setString('bed', bed);
+    await _p.setString('childName', childName);
+    await _p.setStringList('favs', favs.toList());
+    await _p.setInt('extraUntil', extraUntil);
+    await _p.setString('usageDay', usageDay);
+    await _p.setInt('usageSec', usageSec);
+    await _p.setString('usageBy', jsonEncode(usageBy));
+    if (catLimit == null) {
+      await _p.remove('catLimit');
+    } else {
+      await _p.setInt('catLimit', catLimit!);
+    }
+    await _p.setString('catBed', catBed);
+    await _p.setString('catName', catName);
+  }
+
+  /// Топ каналов по времени за сегодня: «Название 12 мин».
+  List<String> topToday() {
+    _rollUsage();
+    final e = usageBy.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+    final out = <String>[];
+    for (final x in e.take(3)) {
+      final ch = channels.where((c) => c.id == x.key);
+      out.add('${ch.isEmpty ? '?' : ch.first.title} ${math.max(1, (x.value / 60).round())} мин');
+    }
+    return out;
   }
 
   Future<void> init() async {
@@ -99,6 +239,24 @@ class AppState extends ChangeNotifier {
     catBlocked = (_p.getStringList('catBlocked') ?? []).toSet();
     watched = _p.getStringList('watched') ?? [];
     family = _p.getString('family') ?? '';
+    limit = _p.getInt('limit') ?? 0;
+    bed = _p.getString('bed') ?? '';
+    childName = _p.getString('childName') ?? '';
+    favs = (_p.getStringList('favs') ?? []).toSet();
+    extraUntil = _p.getInt('extraUntil') ?? 0;
+    usageDay = _p.getString('usageDay') ?? '';
+    usageSec = _p.getInt('usageSec') ?? 0;
+    try {
+      final ub = _p.getString('usageBy');
+      if (ub != null) {
+        usageBy = (jsonDecode(ub) as Map<String, dynamic>).map((k, v) => MapEntry(k, (v as num).toInt()));
+      }
+    } catch (_) {
+      usageBy = {};
+    }
+    catLimit = _p.getInt('catLimit');
+    catBed = _p.getString('catBed') ?? '';
+    catName = _p.getString('catName') ?? '';
     try {
       final ch = _p.getString('channels');
       if (ch != null) {
@@ -219,6 +377,25 @@ class AppState extends ChangeNotifier {
         catBlocked = bv;
         changed = true;
       }
+      final limRaw = body['limitMinutes'];
+      final lim = limRaw is num ? limRaw.toInt() : null;
+      final bedRaw = body['bedtime'];
+      final bedV = bedRaw is String ? bedRaw : '';
+      final nmRaw = body['childName'];
+      final nmV = nmRaw is String ? nmRaw : '';
+      if (lim != catLimit) {
+        catLimit = lim;
+        changed = true;
+      }
+      if (bedV != catBed) {
+        catBed = bedV;
+        changed = true;
+      }
+      if (nmV != catName) {
+        catName = nmV;
+        changed = true;
+      }
+      if (changed) await _saveTime();
       for (final raw in list) {
         final e = raw as Map<String, dynamic>;
         final id = (e['id'] as String?) ?? '';

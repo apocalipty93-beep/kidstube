@@ -103,3 +103,29 @@ body { margin: 0; background: #FFF8F0; color: #3b2a20; font-family: Roboto, Aria
   .row { flex-wrap: wrap; }
 }
 @media (max-width: 700px) { .chips { white-space: nowrap; overflow-x: auto; } .chips::-webkit-scrollbar { display: none; } }
+
+/* детский режим: иконки, экран отдыха, тёмная тема */
+.ibtn { display: inline-flex; align-items: center; justify-content: center; min-width: 3.2rem; height: 3.2rem; padding: 0 .6rem; margin-left: .6rem; border-radius: 1.6rem; background: #FFE0D2; font-size: 1.5rem; line-height: 1; }
+.ibtn.big { min-width: 4rem; height: 4rem; font-size: 1.9rem; margin: 0 .6rem .6rem 0; }
+.ibtn.dim { opacity: .55; }
+.chip { font-size: 1.2rem; padding: .55rem 1.3rem; }
+.avatar { width: 6.4rem; }
+.avatar .pic { width: 5.2rem; height: 5.2rem; }
+.avatar .nm { font-size: .95rem; }
+.lock { position: fixed; left: 0; top: 0; right: 0; bottom: 0; z-index: 90; background: linear-gradient(#2b3a67, #1c2541); color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; }
+.lock-i { font-size: 7rem; line-height: 1; }
+.lock-t { font-size: 2.4rem; font-weight: 800; margin: 1rem 0 .6rem; }
+.lock-s { font-size: 1.3rem; opacity: .8; max-width: 30rem; margin-bottom: 2.2rem; }
+.lock .ibtn { background: rgba(255,255,255,.16); }
+.modal { z-index: 100; }
+@media (prefers-color-scheme: dark) {
+  body { background: #1b1613; color: #f3e9e2; }
+  .chip, .card2, .row, .search, .parent input, .dlg { background: #2a221d; color: #f3e9e2; border-color: #4a3a31; }
+  .btn { background: #4a3a31; color: #ffd9c7; }
+  .btn.main { background: #FF7043; color: #fff; }
+  .btn.off, .ibtn { background: #3a2f28; color: #f3e9e2; }
+  .chip.sel { background: #FF7043; color: #fff; border-color: #FF7043; }
+  .pad .k { background: #3a2f28; color: #fff; }
+  .avatar .pic { background-color: #4a3a31; color: #ffd9c7; }
+  .msg, .hint, .sub { color: #d9c8bd; }
+}

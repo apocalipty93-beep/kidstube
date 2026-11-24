@@ -5,7 +5,9 @@ var KT = (function () {
   var STORE = 'kt_state_v1';
   var DAY6 = 6 * 3600 * 1000;
 
-  var S = { channels: [], videos: [], blocked: [], extra: [], pin: '', autoNext: true, last: 0, seedsSeen: [], catStop: [], catBlocked: [], watched: [], family: '' };
+  var S = { channels: [], videos: [], blocked: [], extra: [], pin: '', autoNext: true, last: 0, seedsSeen: [], catStop: [], catBlocked: [], watched: [], family: '',
+    limit: 0, bed: '', name: '', favs: [], extraUntil: 0, catLimit: null, catBed: null, catName: '',
+    usage: { day: '', sec: 0, by: {} } };
   var st = { loading: false, error: null };
   var listeners = [];
 
@@ -92,10 +94,60 @@ var KT = (function () {
       var sw = (j && j.stopWords) || [], bv = (j && j.blockedVideos) || [];
       if (JSON.stringify(sw) !== JSON.stringify(S.catStop || [])) { S.catStop = sw; changed = true; }
       if (JSON.stringify(bv) !== JSON.stringify(S.catBlocked || [])) { S.catBlocked = bv; changed = true; }
+      var lim = (j && typeof j.limitMinutes === 'number') ? j.limitMinutes : null;
+      var bed = (j && typeof j.bedtime === 'string') ? j.bedtime : '';
+      var nm = (j && typeof j.childName === 'string') ? j.childName : '';
+      if (lim !== S.catLimit) { S.catLimit = lim; changed = true; }
+      if (bed !== (S.catBed || '')) { S.catBed = bed; changed = true; }
+      if (nm !== (S.catName || '')) { S.catName = nm; changed = true; }
       if (changed) { save(); emit(); }
       return changed;
     })['catch'](function () { return false; });
   }
+  /* ---------- время просмотра, сон, любимое ---------- */
+  function dayKey(d) { d = d || new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+  function usageToday() {
+    var u = S.usage || (S.usage = { day: '', sec: 0, by: {} });
+    if (u.day !== dayKey()) { u.day = dayKey(); u.sec = 0; u.by = {}; }
+    return u;
+  }
+  var tickN = 0;
+  function addWatch(sec, chId) {
+    var u = usageToday();
+    u.sec += sec;
+    if (chId) { u.by[chId] = (u.by[chId] || 0) + sec; }
+    tickN++;
+    if (tickN % 10 === 0) { save(); }
+  }
+  function effLimit() { return (S.catLimit !== null && S.catLimit !== undefined) ? S.catLimit : (S.limit || 0); }
+  function effBed() { return S.catBed ? S.catBed : (S.bed || ''); }
+  function effName() { return S.catName || S.name || ''; }
+  function parseHM(s) { var m = /^(\d{1,2}):(\d{2})$/.exec(s || ''); return m ? (+m[1]) * 60 + (+m[2]) : -1; }
+  var WAKE = 7 * 60;
+  function lockState(now) {
+    var d = now || new Date();
+    if ((S.extraUntil || 0) > d.getTime()) { return { locked: false }; }
+    var lim = effLimit();
+    if (lim > 0 && usageToday().sec >= lim * 60) { return { locked: true, reason: 'limit' }; }
+    var b = parseHM(effBed());
+    if (b > WAKE) {
+      var m = d.getHours() * 60 + d.getMinutes();
+      if (m >= b || m < WAKE) { return { locked: true, reason: 'bed' }; }
+    }
+    return { locked: false };
+  }
+  function extend(min) { S.extraUntil = Date.now() + min * 60000; save(); emit(); }
+  function setLimit(n) { S.limit = n; S.extraUntil = 0; save(); emit(); }
+  function setBed(s) { S.bed = s; S.extraUntil = 0; save(); emit(); }
+  function setName(s) { S.name = s; save(); emit(); }
+  function isFav(id) { return (S.favs || []).indexOf(id) !== -1; }
+  function toggleFav(id) {
+    var f = S.favs || (S.favs = []), i = f.indexOf(id);
+    if (i === -1) { f.unshift(id); } else { f.splice(i, 1); }
+    save(); emit();
+    return i === -1;
+  }
+
   function emit() { for (var i = 0; i < listeners.length; i++) { try { listeners[i](); } catch (e) {} } }
   function onChange(fn) { listeners.push(fn); }
 
@@ -358,9 +410,14 @@ var KT = (function () {
     var on = {};
     S.channels.forEach(function (c) { if (c.enabled && c.id) { on[c.id] = true; } });
     var ws = words();
-    return mix(S.videos.filter(function (v) {
+    var list = mix(S.videos.filter(function (v) {
       return on[v.channelId] && S.blocked.indexOf(v.id) === -1 && (S.catBlocked || []).indexOf(v.id) === -1 && !isBlockedText(v.title, ws);
     }));
+    var favs = S.favs || [];
+    if (!favs.length) { return list; }
+    var fv = [], rest = [];
+    list.forEach(function (v) { (favs.indexOf(v.id) !== -1 ? fv : rest).push(v); });
+    return fv.concat(rest);
   }
 
   function init() {
@@ -395,7 +452,7 @@ var KT = (function () {
   function setAutoNext(v) { S.autoNext = !!v; save(); emit(); }
 
   return {
-    S: S, st: st, cfg: CFG, markWatched: markWatched, init: init, syncCatalog: syncCatalog, setFamily: setFamily, checkFamily: checkFamily, refresh: refresh, visible: visible, onChange: onChange, words: words,
+    S: S, st: st, cfg: CFG, markWatched: markWatched, init: init, syncCatalog: syncCatalog, addWatch: addWatch, usageToday: usageToday, lockState: lockState, extend: extend, setLimit: setLimit, setBed: setBed, setName: setName, isFav: isFav, toggleFav: toggleFav, effLimit: effLimit, effBed: effBed, effName: effName, setFamily: setFamily, checkFamily: checkFamily, refresh: refresh, visible: visible, onChange: onChange, words: words,
     setEnabled: setEnabled, removeChannel: removeChannel, addChannelByHandle: addChannelByHandle,
     blockVideo: blockVideo, clearBlocked: clearBlocked, setExtra: setExtra, setPin: setPin, setAutoNext: setAutoNext,
     isBlockedText: isBlockedText, parseDuration: parseDuration, fmtDur: fmtDur, _net: net

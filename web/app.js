@@ -4,6 +4,8 @@
   var root = document.getElementById('app');
   var view = 'home';        // home | player | parent
   var query = '';
+  var searchOpen = false;
+  var lockEl = null;
   var filter = 'all';       // all | ru | en | cat:<id> | ch:<id>
   var newCat = 'cartoons';  // категория для вручную добавляемого канала
   var newText = '';
@@ -53,7 +55,9 @@
   function clear() { root.innerHTML = ''; }
 
   /* ---------- главная ---------- */
+  var CAT_ICON = { cartoons: '🎬', english: '🔤', learn: '🧠', music: '🎵' };
   function applyFilter(all) {
+    if (filter === 'fav') { return all.filter(function (v) { return KT.isFav(v.id); }); }
     var q = query.replace(/^\s+|\s+$/g, '').toLowerCase();
     if (q) {
       return all.filter(function (v) { return (v.title + ' ' + v.channelTitle).toLowerCase().indexOf(q) !== -1; });
@@ -115,13 +119,13 @@
     root.appendChild(h('div', { class: 'head' }, [
       h('div', { class: 'logo' }, [h('i'), 'Мультики']),
       h('div', { class: 'spacer' }),
-      searchBox(),
-      btn('Обновить', 'refresh', function () { KT.refresh(); }),
-      btn('Родителям', 'parent', function () { askPin(function () { renderParent(); }); })
+      searchOpen ? searchBox() : null,
+      foc(h('div', { class: 'ibtn', text: '🔍', title: 'Поиск' }), 'searchbtn', function () { searchOpen = !searchOpen; if (!searchOpen) { query = ''; } renderHome(searchOpen ? 'search' : 'searchbtn'); }),
+      foc(h('div', { class: 'ibtn', text: '⚙️', title: 'Родителям' }), 'parent', function () { askPin(function () { renderParent(); }); })
     ]));
 
     var chips = h('div', { class: 'chips' });
-    [['all', 'Все'], ['ru', 'Русские'], ['en', 'English']].forEach(function (p) {
+    [['all', '🏠 Все']].concat((S.favs || []).length ? [['fav', '❤️ Любимое']] : []).forEach(function (p) {
       chips.appendChild(foc(h('div', { class: 'chip' + (filter === p[0] ? ' sel' : ''), text: p[1] }), 'chip-' + p[0], function () { filter = p[0]; renderHome('chip-' + p[0]); }));
     });
     var present = {}, chOf = {};
@@ -129,7 +133,7 @@
     all.forEach(function (v) { var c = chOf[v.channelId]; if (c) { present[c.cat || 'cartoons'] = true; } });
     (KT.cfg.cats || []).forEach(function (p) {
       if (!present[p.id]) { return; }
-      chips.appendChild(foc(h('div', { class: 'chip' + (filter === 'cat:' + p.id ? ' sel' : ''), text: p.name }), 'chip-cat-' + p.id, function () { filter = 'cat:' + p.id; renderHome('chip-cat-' + p.id); }));
+      chips.appendChild(foc(h('div', { class: 'chip' + (filter === 'cat:' + p.id ? ' sel' : ''), text: (CAT_ICON[p.id] || '🎬') + ' ' + p.name }), 'chip-cat-' + p.id, function () { filter = 'cat:' + p.id; renderHome('chip-cat-' + p.id); }));
     });
     root.appendChild(chips);
 
@@ -157,7 +161,7 @@
       list.forEach(function (v) { grid.appendChild(card(v, list)); });
       root.appendChild(grid);
     }
-    focusKey(key || (list.length ? 'v-' + list[0].id : 'refresh'));
+    focusKey(key || (list.length ? 'v-' + list[0].id : 'parent'));
   }
 
   /* ---------- плеер ---------- */
@@ -239,6 +243,7 @@
   function renderPlayerInfo() {
     var t = document.getElementById('ptitle');
     var c = document.getElementById('pchan');
+    var fb = document.getElementById('favbtn'); if (fb) { fb.textContent = KT.isFav(cur.id) ? '❤️' : '🤍'; }
     if (t) { t.textContent = cur.title; }
     if (c) { c.textContent = cur.channelTitle; }
     var q = document.getElementById('pqueue');
@@ -275,10 +280,14 @@
       h('div', { class: 'ptitle', id: 'ptitle', text: v.title }),
       h('div', { class: 'pchan', id: 'pchan', text: v.channelTitle }),
       h('div', { class: 'prow' }, [
-        btn('Назад', 'back', function () { renderHome(); }),
-        btn('Пауза / Играть', 'pp', togglePause, 'main'),
-        btn('На весь экран', 'fsbtn', function () { setFs(true); }),
-        btn('Родителям', 'pmenu', function () { askPin(blockMenu); })
+        foc(h('div', { class: 'ibtn big', text: '⬅️', title: 'Назад' }), 'back', function () { renderHome(); }),
+        foc(h('div', { class: 'ibtn big', text: '⏯️', title: 'Пауза' }), 'pp', togglePause),
+        foc(h('div', { class: 'ibtn big', text: '⛶', title: 'На весь экран' }), 'fsbtn', function () { setFs(true); }),
+        foc(h('div', { class: 'ibtn big', id: 'favbtn', text: KT.isFav(v.id) ? '❤️' : '🤍', title: 'Любимое' }), 'fav', function () {
+          var on = KT.toggleFav(cur.id);
+          var fb = document.getElementById('favbtn'); if (fb) { fb.textContent = on ? '❤️' : '🤍'; }
+        }),
+        foc(h('div', { class: 'ibtn big dim', text: '⚙️', title: 'Родителям' }), 'pmenu', function () { askPin(blockMenu); })
       ])
     ]);
     var right = h('div', { class: 'pright' }, [h('div', { class: 'qh', text: 'Ещё мультики' }), h('div', { id: 'pqueue' })]);
@@ -461,6 +470,26 @@
     add.appendChild(chipRow([['ru', 'Русский'], ['en', 'English']], newLang, 'al-', function (v) { newLang = v; newText = inp.value; renderParent('al-' + v); }));
     p.appendChild(add);
 
+    // --- Время и сон
+    var fromBot = (S.catLimit !== null && S.catLimit !== undefined) || !!S.catBed;
+    section('Время и сон', fromBot ? 'Часть значений задана в Telegram (/limit, /bedtime) и главнее настроек здесь.' : 'Когда время вышло или наступил сон, приложение закрывается экраном отдыха. Продлить можно по PIN. Из Telegram: /limit и /bedtime.').forEach(function (x) { p.appendChild(x); });
+    var tcard = h('div', { class: 'card2' });
+    tcard.appendChild(h('div', { class: 'lbl', text: 'Сколько можно смотреть в день' }));
+    tcard.appendChild(chipRow([['0', 'Без лимита'], ['20', '20 мин'], ['30', '30 мин'], ['45', '45 мин'], ['60', '1 час'], ['90', '1,5 часа']], String(S.limit || 0), 'lim-', function (v) { KT.setLimit(+v); renderParent('lim-' + v); }));
+    tcard.appendChild(h('div', { class: 'lbl', text: 'Время сна (до 07:00 приложение закрыто)' }));
+    tcard.appendChild(chipRow([['', 'Выкл'], ['20:00', '20:00'], ['21:00', '21:00'], ['22:00', '22:00']], S.bed || '', 'bed-', function (v) { KT.setBed(v); renderParent('bed-' + (v || 'off')); }));
+    var ni = h('input', { type: 'text', value: S.name || '', placeholder: 'Имя ребёнка, например Мирана', maxlength: '20' });
+    ni.setAttribute('data-f', '1'); ni.setAttribute('data-key', 'cname');
+    tcard.appendChild(h('div', { class: 'lbl', text: 'Имя ребёнка (на экране отдыха)' }));
+    tcard.appendChild(h('div', { class: 'frow' }, [ni, btn('Сохранить', 'cnamesave', function () { KT.setName(ni.value.trim()); toast('Сохранено'); renderParent('cnamesave'); })]));
+    p.appendChild(tcard);
+    var u = KT.usageToday(), mins = Math.round(u.sec / 60);
+    var top = [];
+    for (var cid in u.by) { top.push([cid, u.by[cid]]); }
+    top.sort(function (a, b) { return b[1] - a[1]; });
+    var names = top.slice(0, 3).map(function (e) { var c = null; S.channels.forEach(function (x) { if (x.id === e[0]) { c = x; } }); return (c ? c.title : '?') + ' ' + Math.round(e[1] / 60) + ' мин'; });
+    p.appendChild(h('div', { class: 'row' }, [h('div', { class: 'nm' }, ['Сегодня просмотрено: ' + mins + ' мин', h('div', { class: 'sub', text: names.length ? names.join(' · ') : 'пока ничего' + ((S.favs || []).length ? '' : '') })]), (S.favs || []).length ? h('div', { class: 'sub', text: '❤️ в любимом: ' + S.favs.length }) : null]));
+
     // --- Безопасность
     section('Безопасность').forEach(function (x) { p.appendChild(x); });
     var wi = h('input', { type: 'text', id: 'words', value: wordsText === null ? (S.extra || []).join(', ') : wordsText, placeholder: 'слово1, слово2', autocapitalize: 'none' });
@@ -485,11 +514,50 @@
     focusKey(key || 'done');
   }
 
+  /* ---------- экран отдыха (лимит времени, сон) ---------- */
+  function showLock(ls) {
+    if (lockEl) { return; }
+    if (player && player.pauseVideo) { try { player.pauseVideo(); } catch (e) {} }
+    if (fs) { setFs(false); }
+    var nm = KT.effName();
+    var bed = ls.reason === 'bed';
+    lockEl = h('div', { class: 'lock' }, [
+      h('div', { class: 'lock-i', text: bed ? '🌙' : '⏰' }),
+      h('div', { class: 'lock-t', text: bed ? 'Пора спать' + (nm ? ', ' + nm : '') + '!' : 'Мультики на сегодня всё' + (nm ? ', ' + nm : '') + '!' }),
+      h('div', { class: 'lock-s', text: bed ? 'Сладких снов. Завтра будут новые мультики.' : 'Давай поиграем во что-нибудь другое. Завтра снова посмотрим.' }),
+      foc(h('div', { class: 'ibtn big', text: '⚙️', title: 'Родителям' }), 'lockpar', function () {
+        askPin(function () {
+          openModal('Продлить просмотр', [
+            btn('+15 минут', 'x15', function () { KT.extend(15); closeModal(); }, 'main'),
+            btn('+30 минут', 'x30', function () { KT.extend(30); closeModal(); }),
+            btn('Настройки', 'xset', function () { closeModal(); hideLock(); KT.extend(5); renderParent(); }),
+            btn('Отмена', 'xno', closeModal, 'off')
+          ]);
+        });
+      })
+    ]);
+    document.body.appendChild(lockEl);
+    var f = lockEl.querySelector('[data-f]'); if (f) { f.focus(); }
+  }
+  function hideLock() {
+    if (lockEl && lockEl.parentNode) { lockEl.parentNode.removeChild(lockEl); }
+    lockEl = null;
+    if (view === 'home') { renderHome(); }
+  }
+  function tick() {
+    if (view === 'player' && player && player.getPlayerState && !lockEl) {
+      try { if (player.getPlayerState() === 1 && cur) { KT.addWatch(1, cur.channelId); } } catch (e) {}
+    }
+    var ls = KT.lockState();
+    if (ls.locked) { showLock(ls); } else if (lockEl) { hideLock(); }
+  }
+  setInterval(tick, 1000);
+
   /* ---------- пульт и клавиатура ---------- */
   function visibleEl(el) { return el.getClientRects().length > 0; }
 
   function moveFocus(dir) {
-    var scope = modal || root;
+    var scope = modal || lockEl || root;
     var els = Array.prototype.slice.call(scope.querySelectorAll('[data-f]')).filter(visibleEl);
     var cur0 = document.activeElement;
     if (!cur0 || !cur0.hasAttribute || !cur0.hasAttribute('data-f') || els.indexOf(cur0) === -1) { if (els[0]) { els[0].focus(); } return; }
@@ -513,6 +581,7 @@
 
   function goBack() {
     if (modal) { closeModal(); return true; }
+    if (lockEl) { return true; }
     if (view === 'player') { if (fs) { setFs(false); } else { renderHome(); } return true; }
     if (view === 'parent') { renderHome(); return true; }
     return false; // на главной — пусть ТВ закроет приложение

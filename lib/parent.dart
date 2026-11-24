@@ -185,6 +185,63 @@ class ParentScreen extends StatelessWidget {
     return parts.join(' • ');
   }
 
+  Future<void> _pickLimit(BuildContext context) async {
+    const opts = [0, 20, 30, 45, 60, 90];
+    final v = await showDialog<int>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: const Text('Сколько можно смотреть в день'),
+        children: [
+          for (final o in opts)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, o),
+              child: Text(o == 0 ? 'Без лимита' : '$o мин'),
+            ),
+        ],
+      ),
+    );
+    if (v != null) await app.setLimit(v);
+  }
+
+  Future<void> _pickBed(BuildContext context) async {
+    const opts = ['', '20:00', '21:00', '22:00'];
+    final v = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: const Text('Время сна'),
+        children: [
+          for (final o in opts)
+            SimpleDialogOption(
+              onPressed: () => Navigator.pop(ctx, o),
+              child: Text(o.isEmpty ? 'Выкл' : o),
+            ),
+        ],
+      ),
+    );
+    if (v != null) await app.setBed(v);
+  }
+
+  Future<void> _editName(BuildContext context) async {
+    final c = TextEditingController(text: app.childName);
+    final res = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Имя ребёнка'),
+        content: TextField(
+          controller: c,
+          autofocus: true,
+          maxLength: 20,
+          decoration: const InputDecoration(hintText: 'например Мирана'),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Отмена')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, c.text), child: const Text('Сохранить')),
+        ],
+      ),
+    );
+    if (res != null) await app.setChildName(res.trim());
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -231,6 +288,34 @@ class ParentScreen extends StatelessWidget {
                 title: const Text('Добавить канал вручную'),
                 subtitle: const Text('Быстрее через бота: /search запрос'),
                 onTap: () => _addChannel(context),
+              ),
+              _head(context, 'Время и сон',
+                  hint: (app.catLimit != null || app.catBed.isNotEmpty)
+                      ? 'Часть значений задана в Telegram (/limit, /bedtime) и главнее настроек здесь.'
+                      : 'Когда время вышло или наступил сон, приложение закрывается экраном отдыха. Продлить можно по PIN. Из Telegram: /limit и /bedtime.'),
+              ListTile(
+                leading: const Icon(Icons.timer_outlined),
+                title: const Text('Сколько можно смотреть в день'),
+                subtitle: Text(app.limit == 0 ? 'Без лимита' : '${app.limit} мин'),
+                onTap: () => _pickLimit(context),
+              ),
+              ListTile(
+                leading: const Icon(Icons.bedtime_outlined),
+                title: const Text('Время сна (до 07:00 приложение закрыто)'),
+                subtitle: Text(app.bed.isEmpty ? 'Выкл' : 'с ${app.bed}'),
+                onTap: () => _pickBed(context),
+              ),
+              ListTile(
+                leading: const Icon(Icons.child_care),
+                title: const Text('Имя ребёнка'),
+                subtitle: Text(app.childName.isEmpty ? 'не задано (показывается на экране отдыха)' : app.childName),
+                onTap: () => _editName(context),
+              ),
+              ListTile(
+                leading: const Icon(Icons.insights_outlined),
+                title: Text('Сегодня просмотрено: ${(app.usedSeconds / 60).round()} мин'),
+                subtitle: Text(app.topToday().isEmpty ? 'пока ничего' : app.topToday().join(' · ')),
+                trailing: app.favs.isEmpty ? null : Text('❤️ ${app.favs.length}'),
               ),
               _head(context, 'Безопасность'),
               ListTile(

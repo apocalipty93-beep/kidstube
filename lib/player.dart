@@ -22,6 +22,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
   PlayerState _last = PlayerState.unknown;
   bool _fs = false;
   final GlobalKey _playerKey = GlobalKey();
+  Timer? _watchTimer;
 
   @override
   void initState() {
@@ -40,6 +41,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
         origin: 'https://www.youtube-nocookie.com', // фикс ошибки 152
       ),
     );
+    // Считаем время просмотра; когда лимит вышел — ставим на паузу (поверх откроется экран отдыха).
+    _watchTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (app.lockReason() != null) {
+        _c.pauseVideo();
+        return;
+      }
+      if (_c.value.playerState == PlayerState.playing) {
+        app.addWatch(1, _cur.channelId);
+      }
+    });
     _sub = _c.listen((v) {
       if (v.playerState == PlayerState.ended && _last != PlayerState.ended) {
         _playNext();
@@ -123,6 +134,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
 
   @override
   void dispose() {
+    _watchTimer?.cancel();
     _sub?.cancel();
     _c.close();
     SystemChrome.setPreferredOrientations(DeviceOrientation.values);
@@ -185,6 +197,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
                 Text(_cur.channelTitle, style: t.bodySmall),
               ],
             ),
+          ),
+          IconButton.filledTonal(
+            icon: Icon(app.isFav(_cur.id) ? Icons.favorite : Icons.favorite_border,
+                color: Colors.redAccent),
+            iconSize: 32,
+            tooltip: 'Любимое',
+            onPressed: () async {
+              await app.toggleFav(_cur.id);
+              if (mounted) setState(() {});
+            },
           ),
           IconButton.filledTonal(
             icon: const Icon(Icons.fullscreen),

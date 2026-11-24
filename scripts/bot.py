@@ -485,6 +485,9 @@ HELP = ('Команды:\n'
         '/add @handle [мультики|английский|обучение|музыка] — добавить канал сразу\n'
         '/block @handle — убрать канал и больше не показывать\n'
         '/list — что сейчас разрешено\n'
+        '/limit 40 — лимит просмотра в минутах в день (0 — без лимита)\n'
+        '/bedtime 21:00 — время сна, после него приложение закрывается до 07:00 (off — выключить)\n'
+        '/name Мирана — имя ребёнка на экране отдыха\n'
         '/code — код вашей семьи для приложения\n'
         'Новые каналы приходят карточками с кнопками, нажмите ✅ или ❌.')
 def CODE_LINE():
@@ -557,6 +560,30 @@ def handle_text(state, catalog, cfg, chat, text):
         except Exception:  # noqa: BLE001
             pass
         return ('🚫 Видео заблокировано' + (': ' + title if title else ''), True, False)
+    if cmd == '/limit':
+        if not args:
+            cur = catalog.get('limitMinutes')
+            return ('Лимит просмотра в день: %s\nЗадать: /limit 40 (минут), выключить: /limit 0' % ('не задан в боте' if cur is None else ('выключен' if cur == 0 else '%d мин' % cur)), False, False)
+        m = re.fullmatch(r'\d{1,3}', args[0])
+        if not m or int(args[0]) > 600:
+            return ('Напишите минуты числом, например: /limit 40 (0 — без лимита)', False, False)
+        catalog['limitMinutes'] = int(args[0])
+        return ('⏱ Лимит: %s. Приложения применят его при следующем обновлении (до 5 минут).' % ('без лимита' if int(args[0]) == 0 else '%s мин в день' % args[0]), True, False)
+    if cmd == '/bedtime':
+        if not args:
+            return ('Время сна: %s\nЗадать: /bedtime 21:00, выключить: /bedtime off' % (catalog.get('bedtime') or 'не задано'), False, False)
+        if args[0].lower() in ('off', '0', 'выкл', 'нет'):
+            catalog['bedtime'] = ''
+            return ('🌙 Время сна выключено.', True, False)
+        m = re.fullmatch(r'(\d{1,2}):(\d{2})', args[0])
+        if not m or int(m.group(1)) > 23 or int(m.group(2)) > 59 or int(m.group(1)) * 60 + int(m.group(2)) <= 7 * 60:
+            return ('Формат: /bedtime 21:00 (позже 07:00), выключить: /bedtime off', False, False)
+        catalog['bedtime'] = '%02d:%s' % (int(m.group(1)), m.group(2))
+        return ('🌙 Сон с %s до 07:00. Приложения применят при обновлении (до 5 минут).' % catalog['bedtime'], True, False)
+    if cmd == '/name':
+        nm = ' '.join(args).strip()[:20]
+        catalog['childName'] = nm
+        return (('Имя ребёнка: %s' % nm) if nm else 'Имя убрано.', True, False)
     if cmd == '/stop':
         sw = catalog.setdefault('stopWords', [])
         if not args:
@@ -809,6 +836,9 @@ def main():
         {'command': 'block', 'description': 'Убрать канал: /block @handle'},
         {'command': 'video', 'description': 'Заблокировать видео по ссылке'},
         {'command': 'stop', 'description': 'Стоп-слово: /stop слово'},
+        {'command': 'limit', 'description': 'Лимит просмотра: /limit 40'},
+        {'command': 'bedtime', 'description': 'Время сна: /bedtime 21:00'},
+        {'command': 'name', 'description': 'Имя ребёнка: /name Мирана'},
         {'command': 'status', 'description': 'Сводка'},
     ])
     fams = load_json(FAM_PATH, {})
