@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
+import 'package:crypto/crypto.dart' as crypto;
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api.dart';
@@ -14,6 +15,7 @@ class AppState extends ChangeNotifier {
   Set<String> blockedVideos = {};
   Set<String> seedsSeen = {};
   String family = ''; // код семьи из Telegram-бота ('' = общий каталог)
+  bool famChosen = false; // родитель уже вводил код семьи (иначе панель его спрашивает)
   List<String> catStop = []; // стоп-слова из Telegram-бота
   Set<String> catBlocked = {}; // видео, заблокированные через бота
   List<String> watched = []; // недавно просмотренные (уходят в конец ленты)
@@ -239,6 +241,7 @@ class AppState extends ChangeNotifier {
     catBlocked = (_p.getStringList('catBlocked') ?? []).toSet();
     watched = _p.getStringList('watched') ?? [];
     family = _p.getString('family') ?? '';
+    famChosen = _p.getBool('famChosen') ?? false;
     limit = _p.getInt('limit') ?? 0;
     bed = _p.getString('bed') ?? '';
     childName = _p.getString('childName') ?? '';
@@ -315,14 +318,20 @@ class AppState extends ChangeNotifier {
   String catalogUrlFor(String code) {
     if (kCatalogUrl.isEmpty) return '';
     if (code.isEmpty || code == 'main') return kCatalogUrl;
-    return kCatalogUrl.replaceFirst(RegExp(r'data/catalog\.json$'), 'data/families/$code/catalog.json');
+    return kCatalogUrl.replaceFirst(RegExp(r'data/catalog\.json$'), 'data/families/${familyId(code)}/catalog.json');
   }
+
+  static String normCode(String s) => s.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+  /// Папка семьи в репозитории называется хэшем кода, сам код нигде не виден.
+  static String familyId(String code) =>
+      crypto.sha256.convert(utf8.encode('kt1:${normCode(code)}')).toString().substring(0, 16);
 
   /// Проверяет, что семья с таким кодом существует. Возвращает текст ошибки или null.
   Future<String?> checkFamily(String raw) async {
-    final code = raw.trim().toLowerCase();
+    final code = normCode(raw);
     if (code != 'main' && !RegExp(r'^[a-z0-9]{4,12}$').hasMatch(code)) {
-      return 'Код — это 6 букв и цифр из Telegram';
+      return 'Код — это 10 букв и цифр из Telegram';
     }
     final u = catalogUrlFor(code);
     if (u.isEmpty) return 'Каталог не настроен';
@@ -332,13 +341,15 @@ class AppState extends ChangeNotifier {
           .timeout(const Duration(seconds: 20));
       if (r.statusCode == 200) return null;
     } catch (_) {}
-    return 'Такого кода нет. Напишите боту /start и возьмите код из ответа';
+    return 'Такого кода нет. Проверьте код или напишите боту /newcode';
   }
 
   /// Переключает на каталог другой семьи: прежние каналы из каталога убираем, стартовые остаются.
   Future<void> setFamily(String raw) async {
-    final code = raw.trim().toLowerCase();
+    final code = normCode(raw);
     family = code == 'main' ? '' : code;
+    famChosen = true;
+    await _p.setBool('famChosen', true);
     final seedHandles = kSeeds.map((s) => s.handle.toLowerCase()).toSet();
     channels.removeWhere((c) => !(c.custom || (!c.fromCat && seedHandles.contains(c.handle.toLowerCase()))));
     for (final c in channels) {

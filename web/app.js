@@ -395,11 +395,12 @@
     p.appendChild(h('div', { class: 'head ph' }, [h('div', { class: 'logo', text: 'Для родителей' }), h('div', { class: 'spacer' }), btn('Готово', 'done', function () { renderHome(); }, 'main')]));
 
     // --- Семья и Telegram
-    section('Семья и Telegram', 'Новые каналы предлагает Telegram-бот, вы одобряете их там. У каждой семьи свой список каналов.').forEach(function (x) { p.appendChild(x); });
+    var gate = !S.family && !S.famChosen;
+    section(gate ? 'Ваша семья' : 'Семья и Telegram', gate ? 'Введите код вашей семьи из Telegram-бота. Без кода настройки не открываются.' : 'Новые каналы предлагает Telegram-бот, вы одобряете их там. У каждой семьи свой список каналов.').forEach(function (x) { p.appendChild(x); });
     var bot = KT.cfg.botName || '';
     var fam = h('div', { class: 'card2' });
-    fam.appendChild(h('div', { class: 'nm', text: S.family ? 'Ваша семья: ' + S.family : 'Общий каталог (без кода семьи)' }));
-    var ci = h('input', { type: 'text', value: codeText, placeholder: 'Код семьи из Telegram', maxlength: '12', autocapitalize: 'none', autocomplete: 'off' });
+    fam.appendChild(h('div', { class: 'nm', text: gate ? 'Код семьи' : (S.family ? 'Ваша семья: ' + S.family.slice(0, 5) + '-' + S.family.slice(5) : 'Основной каталог (без кода)') }));
+    var ci = h('input', { type: 'text', value: codeText, placeholder: 'Код семьи из Telegram', maxlength: '14', autocapitalize: 'none', autocomplete: 'off' });
     ci.setAttribute('data-f', '1'); ci.setAttribute('data-key', 'code');
     ci.addEventListener('input', function () { codeText = ci.value; });
     function connect() {
@@ -420,10 +421,11 @@
     if (bot) {
       fam.appendChild(h('div', { class: 'steps' }, [
         '1. Откройте в Telegram ', h('a', { href: 'https://t.me/' + bot, target: '_blank', rel: 'noopener', text: '@' + bot }),
-        '  2. Нажмите Start  3. Бот пришлёт код, введите его выше'
+        '  2. Нажмите Start  3. Бот пришлёт код, введите его выше. Потерялся код: команда /newcode'
       ]));
     }
     p.appendChild(fam);
+    if (gate) { root.appendChild(p); focusKey(key || 'code'); return; }
 
     // --- Каналы по категориям
     var enabledN = S.channels.filter(function (c) { return c.enabled; }).length;

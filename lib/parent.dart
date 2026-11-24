@@ -133,14 +133,14 @@ class ParentScreen extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         title: const Text('Код семьи'),
         content: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-          const Text('1. Откройте в Telegram @$kBotName\n2. Нажмите Start\n3. Введите код из ответа бота'),
+          const Text('1. Откройте в Telegram @$kBotName\n2. Нажмите Start\n3. Введите код из ответа бота\nПотерялся код: команда /newcode'),
           const SizedBox(height: 12),
           TextField(
             controller: c,
             autofocus: true,
             autocorrect: false,
             textCapitalization: TextCapitalization.none,
-            decoration: const InputDecoration(hintText: 'например k7x2qa'),
+            decoration: const InputDecoration(hintText: 'например k7x2q-a9mwe'),
           ),
         ]),
         actions: [
@@ -156,7 +156,7 @@ class ParentScreen extends StatelessWidget {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Подключено: ${code.trim().toLowerCase()}')));
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Код принят')));
     await app.setFamily(code);
   }
 
@@ -247,6 +247,36 @@ class ParentScreen extends StatelessWidget {
     return ListenableBuilder(
       listenable: app,
       builder: (context, _) {
+        if (app.family.isEmpty && !app.famChosen) {
+          // Сначала спрашиваем «Ваша семья», настройки показываем только после ввода кода.
+          return Scaffold(
+            appBar: AppBar(title: const Text('Для родителей')),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.family_restroom, size: 64),
+                    const SizedBox(height: 16),
+                    const Text('Ваша семья',
+                        style: TextStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+                    const SizedBox(height: 8),
+                    const Text(
+                        'Введите код семьи из Telegram-бота. Без кода настройки не открываются.',
+                        textAlign: TextAlign.center),
+                    const SizedBox(height: 20),
+                    FilledButton.icon(
+                      icon: const Icon(Icons.vpn_key),
+                      label: const Text('Ввести код семьи'),
+                      onPressed: () => _connectFamily(context),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
         final enabledN = app.channels.where((c) => c.enabled).length;
         return Scaffold(
           appBar: AppBar(title: const Text('Для родителей')),
@@ -257,7 +287,7 @@ class ParentScreen extends StatelessWidget {
                   hint: 'Новые каналы предлагает бот @$kBotName, вы одобряете их в Telegram. У каждой семьи свой список.'),
               ListTile(
                 leading: const Icon(Icons.family_restroom),
-                title: Text(app.family.isEmpty ? 'Общий каталог (без кода семьи)' : 'Ваша семья: ${app.family}'),
+                title: Text(app.family.isEmpty ? 'Основной каталог (без кода)' : 'Ваша семья: ${app.family.length > 5 ? '${app.family.substring(0, 5)}-${app.family.substring(5)}' : app.family}'),
                 subtitle: const Text('Нажмите, чтобы ввести код из Telegram'),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () => _connectFamily(context),

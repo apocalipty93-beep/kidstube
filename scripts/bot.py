@@ -35,8 +35,9 @@ FAM_SEARCH_DAILY = 8         # /search в день на одну чужую се
 GLOBAL_SEARCH_DAILY = 60     # /search в день на всех чужих вместе (100 ед. квоты каждый)
 SALT = os.environ.get('FAMILY_SALT', 'kidstube-v1')
 CODE_ALPHABET = 'abcdefghjkmnpqrstuvwxyz23456789'
+CODE_LEN = 10
 # Контекст текущего обновления: кому слать карточки, чья семья, лимиты
-CTX = {'chats': None, 'code': 'main', 'owner': True, 'limit': 40}
+CTX = {'chats': None, 'code': 'main', 'owner': True, 'limit': 40, 'plain': None}
 DISCOVER_EVERY = 20 * 3600
 QUERIES_PER_RUN = 4
 MAX_NEW_PER_RUN = 6
@@ -488,14 +489,14 @@ HELP = ('Команды:\n'
         '/limit 40 — лимит просмотра в минутах в день (0 — без лимита)\n'
         '/bedtime 21:00 — время сна, после него приложение закрывается до 07:00 (off — выключить)\n'
         '/name Мирана — имя ребёнка на экране отдыха\n'
-        '/code — код вашей семьи для приложения\n'
+        '/newcode — новый код семьи (старый перестанет работать)\n'
         'Новые каналы приходят карточками с кнопками, нажмите ✅ или ❌.')
 def CODE_LINE():
     code = CTX['code']
     if code == 'main':
         return '🔑 Ваш код семьи: main (приложения без кода тоже показывают ваш каталог).'
-    return ('🔑 Код вашей семьи: %s\nВведите его в приложении: Родителям → Семья и код. '
-            'Каналы, которые вы одобрите здесь, появятся только у вас.' % code)
+    return ('🔑 Код семьи бот показывает один раз, при создании, и нигде не хранит.\n'
+            'Потеряли или хотите сменить? Команда /newcode выдаст новый (старый перестанет работать).')
 
 
 CAT_WORDS = {'мультики': 'cartoons', 'мульт': 'cartoons', 'английский': 'english', 'англ': 'english',
@@ -690,6 +691,19 @@ def handle_update(state, catalog, cfg, u):
 
 
 # ---------------------------------------------------------------- семьи (у каждого родителя свой каталог)
+def code_id(code):
+    """Папка семьи называется хэшем кода: сам код в репозитории не виден."""
+    return hashlib.sha256(('kt1:' + re.sub('[^a-z0-9]', '', code.lower())).encode()).hexdigest()[:16]
+
+
+def fmt_code(code):
+    return code[:5] + '-' + code[5:]
+
+
+def new_code():
+    return ''.join(secrets.choice(CODE_ALPHABET) for _ in range(CODE_LEN))
+
+
 def chat_key(chat):
     return hashlib.sha256((SALT + ':' + str(chat)).encode()).hexdigest()[:20]
 
@@ -730,16 +744,55 @@ def family_of(chat, fams):
 def create_family(chat, fams, main_state):
     if len(fams['families']) >= MAX_FAMILIES:
         return None
-    code = ''.join(secrets.choice(CODE_ALPHABET) for _ in range(6))
-    while code in fams['families'] or code == 'main':
-        code = ''.join(secrets.choice(CODE_ALPHABET) for _ in range(6))
-    fams['families'][code] = {'created': now_iso()}
-    fams['chats'][chat_key(chat)] = code
-    os.makedirs(os.path.join(FAM_DIR, code), exist_ok=True)
-    cp, sp = fam_paths(code)
+    code = new_code()
+    while code_id(code) in fams['families']:
+        code = new_code()
+    fid = code_id(code)
+    fams['families'][fid] = {'created': now_iso()}
+    fams['chats'][chat_key(chat)] = fid
+    os.makedirs(os.path.join(FAM_DIR, fid), exist_ok=True)
+    cp, sp = fam_paths(fid)
     save_json(cp, new_catalog())
     save_json(sp, new_state(main_state.get('seedIds')))
-    return code
+    return fid, code
+
+
+def migrate_families(fams):
+    """Старые семьи лежали в папке с открытым кодом: переносим под хэш (прежний код продолжает работать)."""
+    moved = False
+    for old in list(fams['families']):
+        if re.fullmatch('[0-9a-f]{16}', old):
+            continue
+        fid = code_id(old)
+        src = os.path.join(FAM_DIR, old)
+        if os.path.isdir(src) and not os.path.exists(os.path.join(FAM_DIR, fid)):
+            os.rename(src, os.path.join(FAM_DIR, fid))
+        fams['families'][fid] = fams['families'].pop(old)
+        for k, v in list(fams['chats'].items()):
+            if v == old:
+                fams['chats'][k] = fid
+        moved = True
+    if moved:
+        save_json(FAM_PATH, fams)
+        log('families migrated to hashed ids')
+
+
+def rotate_code(chat, fams, cache):
+    """/newcode: выдаёт новый код, старый перестаёт работать (папка переезжает под новый хэш)."""
+    old = fams['chats'].get(chat_key(chat))
+    if not old or old == 'main':
+        return None
+    code = new_code()
+    while code_id(code) in fams['families']:
+        code = new_code()
+    fid = code_id(code)
+    if os.path.isdir(os.path.join(FAM_DIR, old)):
+        os.rename(os.path.join(FAM_DIR, old), os.path.join(FAM_DIR, fid))
+    fams['families'][fid] = fams['families'].pop(old, {'created': now_iso()})
+    fams['chats'][chat_key(chat)] = fid
+    if old in cache:
+        cache[fid] = cache.pop(old)
+    return fid, code
 
 
 def load_family(code, cache, main_state, main_catalog):
@@ -766,14 +819,15 @@ def route_update(u, cfg, fams, cache, main_state, main_catalog, touched):
     if code is None:
         if 'message' not in u:
             return (None, False, False)
-        code = create_family(chat, fams, main_state)
+        made = create_family(chat, fams, main_state)
+        code = made[0] if made else None
         if code is None:
             tg_safe('sendMessage', chat_id=chat, text='Сейчас бот принимает не больше %d семей и места нет. Попробуйте позже.' % MAX_FAMILIES)
             return (None, False, False)
         touched.add('registry')
         tg_safe('sendMessage', chat_id=chat, text='👋 Добро пожаловать! Здесь вы выбираете детские каналы для приложения «Мультики».\n\n'
-                '🔑 Код вашей семьи: %s\nВведите его в приложении: Родителям → Семья и Telegram. '
-                'Каналы, которые вы одобрите здесь, появятся только у вас.\n\nКоманды: /help' % code)
+                '🔑 Код вашей семьи: %s\nВведите его в приложении: Родителям → Ваша семья. '
+                'Никому его не показывайте: по нему открываются ваши настройки. Бот покажет код только один раз; если потеряете, команда /newcode выдаст новый.\n\nКоманды: /help' % fmt_code(made[1]))
     st, cat = load_family(code, cache, main_state, main_catalog)
     owner = code == 'main'
     text = ((u.get('message') or {}).get('text') or '')
@@ -787,6 +841,14 @@ def route_update(u, cfg, fams, cache, main_state, main_catalog, touched):
             return (code, False, False)
         g['n'] += 1
         touched.add('registry')
+    if not owner and text.split()[:1] and text.split()[0].split('@')[0].lower() == '/newcode':
+        r = rotate_code(chat, fams, cache)
+        if r:
+            touched.discard(code)
+            touched.add(r[0])
+            touched.add('registry')
+            tg_safe('sendMessage', chat_id=chat, text='🔑 Новый код семьи: %s\nСтарый код больше не работает. Введите новый в приложении: Родителям → Ваша семья. Никому его не показывайте.' % fmt_code(r[1]))
+            return (r[0], True, False)
     CTX.update(chats=[str(chat)], code=code, owner=owner, limit=40 if owner else FAM_SEARCH_DAILY)
     try:
         ch, w = handle_update(st, cat, cfg, u)
@@ -844,6 +906,7 @@ def main():
     fams = load_json(FAM_PATH, {})
     fams.setdefault('families', {})
     fams.setdefault('chats', {})
+    migrate_families(fams)
     cache = {}
     want = time.time() - state['lastDiscover'] > DISCOVER_EVERY
     deadline = time.time() + LISTEN_SECONDS
