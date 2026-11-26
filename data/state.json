@@ -1,7 +1,7 @@
 {
   "offset": 579252831,
-  "lastDiscover": 1795618302,
-  "qIndex": 6,
+  "lastDiscover": 1795706416,
+  "qIndex": 10,
   "seedIds": {
     "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
     "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
@@ -853,6 +853,90 @@
         "Green car",
         "Blue car",
         "Red car"
+      ]
+    },
+    "UCvVKeMfXmA9N4wVhWqlmPbw": {
+      "id": "UCvVKeMfXmA9N4wVhWqlmPbw",
+      "title": "Теремок Мультики для малышей",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ytc/AIdro_n3KciWLp_48F5UEX-N2rpYgD7adHTJX7Y0uPMIM3Zhmoo=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 2530000,
+      "handle": "teremokmultimix",
+      "samples": [
+        "Жила-была Царевна на Теремке ТВ 📺 Новая серия уже 5 декабря! #мультики #wink",
+        "Давай играть! - Котёнок Котэ и друзья | Обучающие мультики и песенки для малышей",
+        "Серия 14 (Сезон 2) – Волк 🐺🌙 – Тима и Тома | Новый мультик для малышей"
+      ]
+    },
+    "UC7a-zQMVg6U3h67H9RayeQw": {
+      "id": "UC7a-zQMVg6U3h67H9RayeQw",
+      "title": "АВТОБУС БОРИС — детские песенки и мультики",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/ckAtjKAkhVRFfoRuY_CBPS9U7zAQjA4HAXBJyE5TrTfYQM4XtzvU91TdRmNpFKQOCwjL1k9HwQ=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 101000,
+      "handle": "avtobus_boris",
+      "samples": [
+        "Встречайте новый музыкальный мультфильм «Учим звуки» от «Автобуса Бориса»! 🎬",
+        "Мультфильм для малышей от 0-3 лет",
+        "Танцы гарантированы! Песенки и мультики для малышей - Автобус Борис"
+      ]
+    },
+    "UCpj352hhYxdxK02JheWYkRg": {
+      "id": "UCpj352hhYxdxK02JheWYkRg",
+      "title": "Лисёнок Рыжик",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/p5Y2QmIpEQnERuPD1uhKiukw9P29eVUKewhQmLpYoZryqfBZ5jM-3y4MlWqt4Zd7zhMaKFGD=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 20500,
+      "handle": "ryzhiktv",
+      "samples": [
+        "Мегасборник! | Лисёнок Рыжик — Песенки и мультики для малышей",
+        "Считаем овечек 🐑🌙 | Колыбельная для малышей | Лисёнок Рыжик — Колыбельные и мультики перед сном",
+        "Первый снег! ❄️ | Зимняя песенка для малышей | Лисёнок Рыжик — Песенки и мультики для детей"
+      ]
+    },
+    "UCO55P1QDtGlGiPI7JAVi8KQ": {
+      "id": "UCO55P1QDtGlGiPI7JAVi8KQ",
+      "title": "kidygiggles",
+      "lang": "en",
+      "cat": "english",
+      "thumb": "https://yt3.ggpht.com/kjX9t8ri6ksIS734dorG0VsI2lGduch7FzRd8OFhSXUJZHWCaxuOLyW0yDfljolTFovPtI0x8Do=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 19300,
+      "handle": "kidygiggles7",
+      "samples": [
+        "1 Hour 🌈 Let's Make Learning an Adventure! 🎵 | ABC Phonics, Alphabet Songs & Happy Nursery Rhymes 🧸",
+        "🚀 Let's Explore the Alphabet World! 🐻 | ABC Phonics & Letter Recognition 🎶 | Fun Learning Songs",
+        "🎉 ABC Learning Party for Little Stars! ⭐ | Sing the Alphabet A to Z 🔤 | Happy Kindergarten Songs 🌈"
+      ]
+    },
+    "UCkevQ3qnWim9-7ogJ6szkRA": {
+      "id": "UCkevQ3qnWim9-7ogJ6szkRA",
+      "title": "Bairn Learning",
+      "lang": "en",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/LFB_6tIXIc5FkhPwbHsRXr-pDdOieGJOqt5Y__nInr-GqchSPUdd7Rba6U8J6r-L55oLU0nd-L4=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 17700,
+      "handle": "bairnlearning",
+      "samples": [
+        "Toddler Learning Videos For 5 Year Olds | ABCs, 123s Shapes, and Nursery Rhymes",
+        "Preschool Learning Videos For 5 Year Olds | ABCs, 123s Shapes, and Colors Song",
+        "Toddler Learning Videos For 5 Year Olds | ABCs, 123s Shapes, and Nursery Rhymes"
+      ]
+    },
+    "UClpYPJGbaO0t5sgECCnTEGA": {
+      "id": "UClpYPJGbaO0t5sgECCnTEGA",
+      "title": "Educatoon Русский",
+      "lang": "ru",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/Z9TVB64me0d9S7Tu_RQjq2gxgrmFUXp5thSZWmCsPkGv1oZCGQ7im25G1l_eHKeuT2sEcqre=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 11500,
+      "handle": "educatoon.russian",
+      "samples": [
+        "👶👂 ЧАСТИ ТЕЛА! Изучаем Части Тела на Русском | Body Parts for Kids",
+        "🚗🚙 МАШИНЫ! Изучаем Виды Машин и Транспорт | Cars for Kids",
+        "🔢🎵 ЦИФРЫ 1-20! Учим Счёт на Русском | Learn Numbers for Kids"
       ]
     }
   },
