@@ -1,7 +1,7 @@
 {
   "offset": 579252831,
-  "lastDiscover": 1795706416,
-  "qIndex": 10,
+  "lastDiscover": 1795795925,
+  "qIndex": 14,
   "seedIds": {
     "mashabearrussian": "UCRv76wLBC73jiP7LX4C3l8Q",
     "fixiki": "UCs_uv3QyUIQjBoL1Ij5BdlQ",
@@ -152,7 +152,11 @@
     "UCw5tblB2lwXQEcM1B8coWQg": "auto_rejected",
     "UCpbpfcZfo-hoDAx2m1blFhg": "auto_rejected",
     "UCtlth0w7_mYqpHPViMhQ99Q": "auto_rejected",
-    "UCQF6j_tdi6KKz7QEPQEmqxw": "auto_rejected"
+    "UCQF6j_tdi6KKz7QEPQEmqxw": "auto_rejected",
+    "UC7QX724vt3YwVnkMwtmdqNA": "auto_rejected",
+    "UCsr1QSe6yvNndmE8bYQsarQ": "auto_rejected",
+    "UCigytxW2yAeJgtUXVI4olkA": "auto_rejected",
+    "UCwVwRcm7xXBX8tv3ZNvUGvA": "auto_rejected"
   },
   "pending": {
     "UCG2CL6EUjG8TVT1Tpl9nJdg": {
@@ -937,6 +941,90 @@
         "👶👂 ЧАСТИ ТЕЛА! Изучаем Части Тела на Русском | Body Parts for Kids",
         "🚗🚙 МАШИНЫ! Изучаем Виды Машин и Транспорт | Cars for Kids",
         "🔢🎵 ЦИФРЫ 1-20! Учим Счёт на Русском | Learn Numbers for Kids"
+      ]
+    },
+    "UCGmUVLnXzVFinN3zskZIiyA": {
+      "id": "UCGmUVLnXzVFinN3zskZIiyA",
+      "title": "Наше ВСЁ! [rec]",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/yvfJHMVBIKyCQA1ShKyUg7HzMAVrhA_0ib4EYbvz4g22rH03C3hGlAaunEW5f6l_0tWBfxmlmW0=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 116000,
+      "handle": "nashevserec",
+      "samples": [
+        "У Маланьи #русскиепотешки",
+        "КУКАРЕКУ🐔 (Петушок поёт с утра) / Русские потешки. 👐 Наше всё!",
+        "СИДИТ БЕЛКА НА ТЕЛЕЖКЕ / Русские потешки. Мульт-песенка 👐 Наше всё [rec]"
+      ]
+    },
+    "UCuWutieg7_cZFWIEKXXifuA": {
+      "id": "UCuWutieg7_cZFWIEKXXifuA",
+      "title": "Музыкаша",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/1bejJzQpksLQOfBwFIxuI4KZvdmtra3MitJXZecvCxG4nTAgckYmOMWG8SRAe9Q1FIWJPXSp8GQ=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 70500,
+      "handle": "muzikasha",
+      "samples": [
+        "Капризуля",
+        "Новогодняя ёлочка и лесные друзья",
+        "Первый снег! ❄️"
+      ]
+    },
+    "UCWxJpD5uEm8l0MrZLrDiyJg": {
+      "id": "UCWxJpD5uEm8l0MrZLrDiyJg",
+      "title": "Ready! Set! Learn!",
+      "lang": "en",
+      "cat": "learn",
+      "thumb": "https://yt3.ggpht.com/01jqwJojBcZpGSGodAihgDq513G45qNJaDzr1EqiCFHHGG-Gx0OviRv5yNJrYvcuihqlucDqfg=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 43600,
+      "handle": "readysetlearners",
+      "samples": [
+        "Learn Animal Names & Shapes with Matching Activity Puzzle | Preschool Toddler Toy Learning Video",
+        "Find the Missing Numbers and Shapes with a Montessori Activity Puzzle  | Preschool Toddler Learning",
+        "Learn ABC with Alphabet Game | Best Learn ABC Puzzle | Preschool Toddler Learning Videos"
+      ]
+    },
+    "UCq6OPA7UG5qZvF9hUtc3YDA": {
+      "id": "UCq6OPA7UG5qZvF9hUtc3YDA",
+      "title": "Умняшка Лёля",
+      "lang": "ru",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/i5CQAJu8En48vyQ18d7W73sjMZ2qttXJXoPrTVopl_rkVRGCUkCyZjWUFTVpOKgh__6kik_r=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 43400,
+      "handle": "umnyashkalelya",
+      "samples": [
+        "Весёлая песенка про цифры для малышей от 2 до 6 лет",
+        "Алфавит с Лёлей! Буквы У, Ф, Х, Ц, Ч для детей 2-6 лет",
+        "Алфавит с Лёлей! Буквы О, П, Р, С, Т для детей 2-6 лет"
+      ]
+    },
+    "UC9TYpuNo1-dv1b2nhVAxC_g": {
+      "id": "UC9TYpuNo1-dv1b2nhVAxC_g",
+      "title": "Bible Bedtime Lullabies",
+      "lang": "en",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/JoLpzvMap71qCakUFg8N7l-4GSXmuWxtDtrcouTVMMCF25DpZmW4xGOMjNFQ2ASsDFs44X68sA=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 36500,
+      "handle": "biblebedtimelullabies",
+      "samples": [
+        "Soft Christian Sleep Songs for Children’s Bedtime with Psalms and Gentle Gospel Vibes",
+        "Tranquil Faith-Based Music for Babies to Rest Soundly with God’s Love and Serenity",
+        "Soothing Christian Lullabies for Kids’ Deep Sleep Featuring Hymns and Heavenly Peace"
+      ]
+    },
+    "UCSA8_OO4wDo3kF6WhD4ucQA": {
+      "id": "UCSA8_OO4wDo3kF6WhD4ucQA",
+      "title": "Peaceful Christian Lullabies",
+      "lang": "en",
+      "cat": "music",
+      "thumb": "https://yt3.ggpht.com/zgTgLsm_f573uouoFPsWJC6zATsMkUjViFw9RGTPJMiPXJHVc7fijG9jzNvzOx8tqy5qPabqPbY=s240-c-k-c0x00ffffff-no-rj",
+      "subs": 28200,
+      "handle": "peacefulchristianlullabies",
+      "samples": [
+        "Christian baby bedtime music soothing bible lullabies for kids sleep",
+        "Bible songs for babies peaceful christian lullabies for sleep and rest",
+        "Nighttime with Jesus soft christian lullabies to calm children’s hearts"
       ]
     }
   },
